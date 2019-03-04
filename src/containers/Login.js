@@ -25,15 +25,10 @@ export default class Login extends Component {
 
   handleSubmit = async event => {
     event.preventDefault();
-    alert('Inside Function')
     try {
-        alert('inside try')
       await Auth.signIn(this.state.email, this.state.password)
-        .then((data) => console.log('Then: ', data))
-        .catch((error) => console.log('Catch: ', error))
-      alert("Logged in");
+      this.props.userHasAuthenticated(true)
     } catch (e) {
-        alert('We have an issue')
       alert(e.message);
     }
   }
