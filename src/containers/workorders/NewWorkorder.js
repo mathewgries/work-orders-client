@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import { FormGroup, FormControl, ControlLabel } from "react-bootstrap";
-import LoaderButton from "../components/LoaderButton";
+import LoaderButton from "../../components/LoaderButton";
 import { API } from 'aws-amplify'
-import { s3Upload } from '../libs/awsLib'
-import config from "../config";
+import { s3Upload } from '../../libs/awsLib'
+import config from "../../config";
 import "./NewWorkorder.css";
 
 export default class NewWorkorder extends Component {
@@ -19,7 +19,7 @@ export default class NewWorkorder extends Component {
             title: '',
             client: '',
             contact: '',
-            description: ""
+            description: '',
         };
     }
 
@@ -104,14 +104,14 @@ export default class NewWorkorder extends Component {
                         />
                     </FormGroup>
                     <FormGroup controlId='contact'>
-                        <ControlLabel>Client Name</ControlLabel>
+                        <ControlLabel>Contact Name</ControlLabel>
                         <FormControl
                             onChange={this.handleChange}
                             value={contact}
                             componentClass='input'
                         />
                     </FormGroup>
-                    <FormGroup controlId="content">
+                    <FormGroup controlId="description">
                         <FormControl
                             onChange={this.handleChange}
                             value={description}

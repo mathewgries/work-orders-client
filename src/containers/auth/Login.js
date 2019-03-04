@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 import { Auth } from "aws-amplify";
-import LoaderButton from '../components/LoaderButton'
+import LoaderButton from '../../components/LoaderButton'
 import "./Login.css";
 
 export default class Login extends Component {

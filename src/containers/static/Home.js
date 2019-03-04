@@ -30,7 +30,9 @@ export default class Home extends Component {
   }
   
   workorders() {
-    return API.get('workorders', '/workorders');
+    const result = API.get('workorders', '/workorders');
+    console.log('Result: ', result)
+    return result
   }
 
   renderWorkordersList(workorders) {
@@ -41,7 +43,7 @@ export default class Home extends Component {
               key={workorder.workorderId}
               to={`/workorders/${workorder.workorderId}`}
             >
-              <ListGroupItem header={workorder.content.trim().split("\n")[0]}>
+              <ListGroupItem header={workorder.title.trim().split("\n")[0]}>
                 {"Created: " + new Date(workorder.createdAt).toLocaleString()}
               </ListGroupItem>
             </LinkContainer>
