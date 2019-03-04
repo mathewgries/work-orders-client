@@ -24,12 +24,9 @@ export default class NewWorkorder extends Component {
     }
 
     validateForm() {
-        const {title, client, contact,description} = this.state
+        const {title, client, contact, description} = this.state
         
-        return title.length > 0
-        || client.length > 0
-        || contact.length > 0
-        || description.length > 0
+        return title.length > 0 && client.length > 0 && contact.length > 0 && description.length > 0
     }
 
     handleChange = event => {
