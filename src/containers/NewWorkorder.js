@@ -16,12 +16,20 @@ export default class NewWorkorder extends Component {
             // Add the fields to the state
             // Job Title, Job Description, 
             isLoading: null,
-            content: ""
+            title: '',
+            client: '',
+            contact: '',
+            description: ""
         };
     }
 
     validateForm() {
-        return this.state.content.length > 0;
+        const {title, client, contact,description} = this.state
+        
+        return title.length > 0
+        || client.length > 0
+        || contact.length > 0
+        || description.length > 0
     }
 
     handleChange = event => {
@@ -45,13 +53,19 @@ export default class NewWorkorder extends Component {
         this.setState({ isLoading: true });
 
         try {
+            const { title, client, contact, description } = this.state
             const attachment = this.file
                 ? await s3Upload(this.file)
                 : null;
 
             await this.createWorkorder({
                 attachment,
-                content: this.state.content
+                content: {
+                    title,
+                    client,
+                    contact,
+                    description
+                }
             });
             this.props.history.push("/");
         } catch (e) {
@@ -67,13 +81,40 @@ export default class NewWorkorder extends Component {
     }
 
     render() {
+
+        const { title, client, contact, description } = this.state
+
         return (
             <div className="NewWorkorder">
                 <form onSubmit={this.handleSubmit}>
+                    <FormGroup controlId='title'>
+                        <ControlLabel>Job Title</ControlLabel>
+                        <FormControl
+                            onChange={this.handleChange}
+                            value={title}
+                            componentClass='input'
+                        />
+                    </FormGroup>
+                    <FormGroup controlId='client'>
+                        <ControlLabel>Client Name</ControlLabel>
+                        <FormControl
+                            onChange={this.handleChange}
+                            value={client}
+                            componentClass='input'
+                        />
+                    </FormGroup>
+                    <FormGroup controlId='contact'>
+                        <ControlLabel>Client Name</ControlLabel>
+                        <FormControl
+                            onChange={this.handleChange}
+                            value={contact}
+                            componentClass='input'
+                        />
+                    </FormGroup>
                     <FormGroup controlId="content">
                         <FormControl
                             onChange={this.handleChange}
-                            value={this.state.content}
+                            value={description}
                             componentClass="textarea"
                         />
                     </FormGroup>
