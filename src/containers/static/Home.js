@@ -32,7 +32,6 @@ export default class Home extends Component {
 
 	workorders() {
 		const result = API.get('workorders', '/workorders');
-		console.log('Result: ', result)
 		return result
 	}
 
