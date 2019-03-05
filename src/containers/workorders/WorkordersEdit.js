@@ -6,7 +6,7 @@ import { s3Upload } from '../../libs/awsLib';
 import './Workorders.css'
 import { API, Storage } from "aws-amplify";
 
-export default class Workorders extends Component {
+export default class WorkordersEdit extends Component {
     constructor(props) {
         super(props);
 

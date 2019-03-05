@@ -7,7 +7,8 @@ import Home from './containers/static/Home'
 import Login from './containers/auth/Login'
 import Signup from './containers/auth/Signup'
 import NewWorkorder from './containers/workorders/NewWorkorder'
-import Workorders from './containers/workorders/Workorders'
+import WorkordersView from './containers/workorders/WorkordersView'
+import WorkordersEdit from './containers/workorders/WorkordersEdit'
 import NotFound from './containers/static/NotFound'
 
 export default ({ childProps}) => 
@@ -16,7 +17,8 @@ export default ({ childProps}) =>
         <UnAuthenticatedRoute path="/login" exact component={Login} props={childProps}/>
         <UnAuthenticatedRoute path="/signup" exact component={Signup} props={childProps} />
         <AuthenticatedRoute path="/workorders/new" exact component={NewWorkorder} props={childProps} />
-        <AuthenticatedRoute path="/workorders/:id" exact component={Workorders} props={childProps} />
+        <AuthenticatedRoute path="/workorders/:id" exact component={WorkordersView} props={childProps} />
+        <AuthenticatedRoute path="/workorders/edit/:id" exact component={WorkordersEdit} props={childProps} />
         { /* Finally, catch all unmatched routes */ }
         <Route component={NotFound}/>
     </Switch>

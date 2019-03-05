@@ -20,3 +20,12 @@ code {
 .App .navbar-brand {
   font-weight: bold;
 }
+
+select.form-control,
+textarea.form-control,
+input.form-control {
+  font-size: 16px;
+}
+input[type=file] {
+  width: 100%;
+}
