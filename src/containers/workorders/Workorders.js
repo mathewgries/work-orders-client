@@ -64,7 +64,7 @@ export default class Workorders extends Component {
     }
 
     saveWorkorder(workorder) {
-        return API.put("workorders", `/workorder/${this.props.match.params.id}`, {
+        return API.put("workorders", `/workorders/${this.props.match.params.id}`, {
           body: workorder
         });
       }
