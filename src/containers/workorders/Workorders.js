@@ -65,70 +65,68 @@ export default class Workorders extends Component {
 
     saveWorkorder(workorder) {
         return API.put("workorders", `/workorders/${this.props.match.params.id}`, {
-          body: workorder
+            body: workorder
         });
-      }
-      
-      handleSubmit = async event => {
+    }
+
+    handleSubmit = async event => {
         let attachment;
-      
+
         event.preventDefault();
-      
+
         if (this.file && this.file.size > config.MAX_ATTACHMENT_SIZE) {
-          alert(`Please pick a file smaller than ${config.MAX_ATTACHMENT_SIZE/1000000} MB.`);
-          return;
+            alert(`Please pick a file smaller than ${config.MAX_ATTACHMENT_SIZE / 1000000} MB.`);
+            return;
         }
-      
+
         this.setState({ isLoading: true });
-        
+
         try {
-          if (this.file) {
-            attachment = await s3Upload(this.file);
-          }
-          
-          const {title, client, contact, description} = this.state
-          await this.saveWorkorder({
-            content: {
+            if (this.file) {
+                attachment = await s3Upload(this.file);
+            }
+
+            const { title, client, contact, description } = this.state
+            await this.saveWorkorder({
                 title,
                 client,
                 contact,
                 description,
-            },
-            attachment: attachment || this.state.workorder.attachment
-          });
-          this.props.history.push("/");
+                attachment: attachment || this.state.workorder.attachment
+            });
+            this.props.history.push("/");
         } catch (e) {
-          alert(e);
-          this.setState({ isLoading: false });
+            alert(e);
+            this.setState({ isLoading: false });
         }
-      }
-      
+    }
 
-      deleteWorkorder() {
+
+    deleteWorkorder() {
         return API.del("workorders", `/workorders/${this.props.match.params.id}`);
-      }
-      
-      handleDelete = async event => {
+    }
+
+    handleDelete = async event => {
         event.preventDefault();
-      
+
         const confirmed = window.confirm(
-          "Are you sure you want to delete this workorder?"
+            "Are you sure you want to delete this workorder?"
         );
-      
+
         if (!confirmed) {
-          return;
+            return;
         }
-      
+
         this.setState({ isDeleting: true });
-      
+
         try {
-          await this.deleteWorkorder();
-          this.props.history.push("/");
+            await this.deleteWorkorder();
+            this.props.history.push("/");
         } catch (e) {
-          alert(e);
-          this.setState({ isDeleting: false });
+            alert(e);
+            this.setState({ isDeleting: false });
         }
-      }
+    }
 
 
     render() {
