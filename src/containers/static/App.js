@@ -3,7 +3,7 @@ import { Auth } from 'aws-amplify'
 import { Link } from 'react-router-dom'
 import { Nav, Navbar, NavItem } from 'react-bootstrap'
 import { LinkContainer } from 'react-router-bootstrap'
-import Routes from '../Routes'
+import Routes from '../../Routes'
 
 class App extends Component {
 	constructor(props) {
