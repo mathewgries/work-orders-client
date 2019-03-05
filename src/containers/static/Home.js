@@ -44,7 +44,7 @@ export default class Home extends Component {
 						key={workorder.workorderId}
 						to={`/workorders/${workorder.workorderId}`}
 					>
-						<ListGroupItem header={workorder.title.trim().split("\n")[0]}>
+						<ListGroupItem header={workorder.title}>
 							{"Created: " + new Date(workorder.createdAt).toLocaleString()}
 						</ListGroupItem>
 					</LinkContainer>
@@ -92,7 +92,10 @@ export default class Home extends Component {
 	render() {
 		return (
 			<div className="Home">
-				{this.props.isAuthenticated ? this.renderWorkorders() : this.renderLander()}
+				{this.props.isAuthenticated
+					? this.renderWorkorders()
+					: this.renderLander()
+				}
 			</div>
 		);
 	}
