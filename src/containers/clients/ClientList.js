@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
+import { Loader } from 'semantic-ui-react'
 import { API } from 'aws-amplify'
 
 export default class ClientList extends Component {
-    constructor(props){
+    constructor(props) {
         super(props)
         this.state = {
             isLoading: true,
@@ -11,30 +12,42 @@ export default class ClientList extends Component {
         }
     }
 
-    async componentDidMount(){
-        if(!this.props.isAuthenticated){
+    async componentDidMount() {
+        if (!this.props.isAuthenticated) {
             return
         }
 
-        try{
+        try {
             const clients = await this.clients()
-            this.setState({clients})
+            this.setState({
+                clients,
+                isLoading: false
+            })   
         } catch (e) {
-            alert(e)
+            alert(e.message)
         }
     }
 
-    clients(){
-        return API.get('clients', '/clients')
+    clients() {
+        const result = API.get('clients', '/clients')
+        return result
+    }
+
+    renderClientsLlist(clients) {
+
     }
 
     render() {
+        if(this.state.isLoading){
+            return <Loader/>
+        }
         return (
             <div>
                 <h1>Client List</h1>
                 <div>
-                <Link to='/clients/new' className='btn btn-primary'>Add Client</Link>
+                    <Link to='/clients/new' className='btn btn-primary'>Add Client</Link>
                 </div>
+
                 <pre>{JSON.stringify(this.state.clients, null, 2)}</pre>
 
             </div>
