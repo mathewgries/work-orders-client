@@ -52,9 +52,7 @@ export default class Home extends Component {
 						to="/workorders/new"
 					>
 						<ListGroupItem>
-							<h4>
-								<b>{"\uFF0B"}</b> Create a new workorder
-                </h4>
+							<h4><b>{"\uFF0B"}</b> Create a new workorder</h4>
 						</ListGroupItem>
 					</LinkContainer>
 		);

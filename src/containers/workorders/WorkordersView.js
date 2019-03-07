@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
-import { Segment, Header, List } from 'semantic-ui-react'
+import { Segment, Header, List, Loader } from 'semantic-ui-react'
 import { Link } from 'react-router-dom'
-import Loading from '../static/Loading'
 import './WorkordersView.css'
 import { API } from 'aws-amplify'
 
@@ -31,7 +30,7 @@ export default class WorkorderView extends Component {
 
     render() {
         if (this.state.isLoading) {
-            return <Loading />
+            return <Loader />
         }
         const { title, client, contact, description } = this.state.workorder
         return (

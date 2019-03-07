@@ -56,6 +56,11 @@ class App extends Component {
 						<Navbar.Toggle />
 					</Navbar.Header>
 					<Navbar.Collapse>
+						<Nav>
+							<LinkContainer to='/clients'>
+								<NavItem>Clients</NavItem>
+							</LinkContainer>
+						</Nav>
 						<Nav pullRight>
 							{this.state.isAuthenticated
 								? <NavItem onClick={this.handleLogout}>Logout</NavItem>
