@@ -22,7 +22,7 @@ export default class ClientList extends Component {
             this.setState({
                 clients,
                 isLoading: false
-            })   
+            })
         } catch (e) {
             alert(e.message)
         }
@@ -33,13 +33,9 @@ export default class ClientList extends Component {
         return result
     }
 
-    renderClientsLlist(clients) {
-
-    }
-
     render() {
-        if(this.state.isLoading){
-            return <Loader/>
+        if (this.state.isLoading) {
+            return <Loader />
         }
         return (
             <div>
@@ -47,8 +43,10 @@ export default class ClientList extends Component {
                 <div>
                     <Link to='/clients/new' className='btn btn-primary'>Add Client</Link>
                 </div>
+                {this.state.clients.length === 0
+                    ? <div>No clients added yet</div>
+                    : <pre>{JSON.stringify(this.state.clients, null, 2)}</pre>}
 
-                <pre>{JSON.stringify(this.state.clients, null, 2)}</pre>
 
             </div>
         )

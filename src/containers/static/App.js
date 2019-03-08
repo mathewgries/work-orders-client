@@ -60,6 +60,9 @@ class App extends Component {
 							<LinkContainer to='/clients'>
 								<NavItem>Clients</NavItem>
 							</LinkContainer>
+							<LinkContainer to='/contacts'>
+								<NavItem>Contacts</NavItem>
+							</LinkContainer>
 						</Nav>
 						<Nav pullRight>
 							{this.state.isAuthenticated

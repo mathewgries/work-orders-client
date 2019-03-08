@@ -1,0 +1,12 @@
+.phone-input {
+    display: flex;
+    justify-content: space-around;
+}
+
+.country-code {
+    height: 100%;
+}
+
+.country-code select {
+    height: 100%;
+}

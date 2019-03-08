@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 import { Form, Input } from 'semantic-ui-react'
+import LoaderButton from '../../components/LoaderButton'
+import { API } from 'aws-amplify'
 
 const arrayOfOptions = [
     { key: '1', text: 'Jon', value: 'Jon' },
@@ -12,10 +14,14 @@ export default class NewClient extends Component {
     constructor(props) {
         super(props)
         this.state = {
+            isLoading: null,
             name: '',
-            contact: null,
-            contactId: null,
         }
+    }
+
+    validateForm() {
+        const { name } = this.state
+        return name.length > 0
     }
 
     handleChange = (e) => {
@@ -28,18 +34,42 @@ export default class NewClient extends Component {
             return opt.value === value
         })
 
-        console.log(selected)
-        this.setState({ 
+        console.log(e)
+        this.setState({
             contact: value,
-            contactId: selected[0].key
+        })
+    }
+
+    handleSubmit = async (e) => {
+        e.preventDefault()
+
+        this.setState({ isLoading: true })
+
+        try {
+            const { name } = this.state
+            await this.createClient({
+                content: {
+                    name
+                }
+            })
+            this.props.history.push('/clients')
+        } catch (e) {
+            alert(e)
+            this.setState({ isLoading: false })
+        }
+    }
+
+    createClient(client) {
+        return API.post('clients', '/clients', {
+            body: client
         })
     }
 
     render() {
-        const { name, contact } = this.state
+        const { name } = this.state
         return (
             <div>
-                <Form>
+                <Form onSubmit={this.handleSubmit}>
                     <Form.Group>
                         <Form.Field required>
                             <label>Client Name:</label>
@@ -51,7 +81,7 @@ export default class NewClient extends Component {
                                 onChange={this.handleChange}
                             />
                         </Form.Field>
-                        <Form.Field>
+                        {/* <Form.Field>
                             <label>Contact</label>
                             <Form.Dropdown
                                 clearable
@@ -63,7 +93,17 @@ export default class NewClient extends Component {
                                 onChange={this.handleSelectChange}
                                 value={contact}
                             />
-                        </Form.Field>
+                        </Form.Field> */}
+                        <LoaderButton
+                            block
+                            bsStyle="primary"
+                            bsSize="large"
+                            disabled={!this.validateForm()}
+                            type="submit"
+                            isLoading={this.state.isLoading}
+                            text="Create"
+                            loadingText="Creating…"
+                        />
                     </Form.Group>
                 </Form>
             </div>
