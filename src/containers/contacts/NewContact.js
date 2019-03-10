@@ -6,6 +6,10 @@ import LoaderButton from '../../components/LoaderButton'
 import uuid from 'uuid'
 import './NewContact.css'
 
+/*
+    TODO: ADD UPDATES TO PHONE TABLE AND CLIENT TABLE
+*/
+
 const preferredMethods = [
     { text: 'Home', value: 'Home' },
     { text: 'Cell', value: 'Cell' },
@@ -127,6 +131,13 @@ export default class NewContact extends Component {
                     preferredContactMethod
                 }
             })
+
+            await this.createClient({
+                content: {
+                    clientId: client.clientId,
+                    name: client.clientName
+                }
+            })
             this.props.history.push('/contacts')
         } catch (e) {
             alert(e)
@@ -140,6 +151,12 @@ export default class NewContact extends Component {
         })
     }
 
+    createClient(client){
+        return API.post('clients', '/clients', {
+            body: client
+        })
+    }
+
     render() {
         if (this.state.isLoading) {
             return <Loader />
@@ -148,16 +165,52 @@ export default class NewContact extends Component {
         const { name, email, client, preferredContactMethod } = this.state
         return (
             <Form onSubmit={this.handleSubmit}>
-                <Segment>
-                    <Form.Field required>
-                        <label>Contact Name:</label>
-                        <Input
-                            name='name'
-                            value={name}
-                            onChange={this.handleChange}
-                        />
-                    </Form.Field>
-                </Segment>
+                    <Segment>
+                        <Form.Field required>
+                            <label>Contact Name:</label>
+                            <Input
+                                name='name'
+                                value={name}
+                                onChange={this.handleChange}
+                            />
+                        </Form.Field>
+                        <Form.Field>
+                            <label>Client Relation:</label>
+                            <Form.Dropdown
+                                name='client'
+                                placeholder='Search client list...'
+                                search
+                                selection
+                                allowAdditions
+                                additionLabel='Create new client: '
+                                options={this.state.clients}
+                                value={client.name}
+                                onChange={this.handleClientChange}
+                            />
+                        </Form.Field>
+                        <Form.Field>
+                            <label>Email:</label>
+                            <Input
+                                type='email'
+                                name='email'
+                                value={email}
+                                onChange={this.handleChange}
+                            />
+                        </Form.Field>
+
+                        <Form.Field>
+                            <label>Preffered Contact Method:</label>
+                            <Form.Dropdown
+                                name='preferredContactMethod'
+                                placeholder={`Contact's preffered contact method...`}
+                                search
+                                selection
+                                options={preferredMethods}
+                                value={preferredContactMethod}
+                                onChange={this.handleSelectChange}
+                            />
+                        </Form.Field>
+                    </Segment>
                 <Form.Field>
                     <label>Phone Numbers</label>
                     <PhoneFormList
@@ -165,44 +218,6 @@ export default class NewContact extends Component {
                         removePhoneNumber={this.handleRemovePhoneNumber}
                     />
                 </Form.Field>
-                <Segment>
-                    <Form.Field>
-                        <label>Email:</label>
-                        <Input
-                            type='email'
-                            name='email'
-                            value={email}
-                            onChange={this.handleChange}
-                        />
-                    </Form.Field>
-                    <Form.Field>
-                        <label>Client Relation:</label>
-                        <Form.Dropdown
-                            name='client'
-                            placeholder='Search client list...'
-                            search
-                            selection
-                            allowAdditions
-                            additionLabel='Create new client: '
-                            options={this.state.clients}
-                            value={client.name}
-                            onChange={this.handleClientChange}
-                        />
-                    </Form.Field>
-                    <Form.Field>
-                        <label>Preffered Contact Method:</label>
-                        <Form.Dropdown
-                            name='preferredContactMethod'
-                            placeholder={`Contact's preffered contact method...`}
-                            search
-                            selection
-                            options={preferredMethods}
-                            value={preferredContactMethod}
-                            onChange={this.handleSelectChange}
-                        />
-                    </Form.Field>
-                </Segment>
-
                 <LoaderButton
                     block
                     bsStyle="primary"
@@ -213,7 +228,7 @@ export default class NewContact extends Component {
                     text="Create"
                     loadingText="Creating…"
                 />
-            </Form>
+            </Form >
         )
     }
 }

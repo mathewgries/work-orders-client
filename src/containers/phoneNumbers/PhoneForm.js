@@ -3,7 +3,11 @@ import { Form, Dropdown, Button, Segment } from 'semantic-ui-react'
 import Cleave from 'cleave.js/react'
 import CleavePhone from 'cleave.js/dist/addons/cleave-phone.i18n'
 import { countryCodes } from '../../utils/countryCodes'
+import './PhoneForm.css'
 
+/*
+    TODO: See if phoneTypes list can be passed in as prop (customized for parent commponent needs)
+*/
 const phoneTypes = [
     { text: 'Home', value: 'Home' },
     { text: 'Cell', value: 'Cell' },
@@ -27,9 +31,9 @@ export default class PhoneForm extends Component {
             submitted: false,
         }
     }
-    
-    componentDidMount(){
-        this.setState({id: this.props.id})
+
+    componentDidMount() {
+        this.setState({ id: this.props.id })
     }
 
     validateForm() {
@@ -80,58 +84,59 @@ export default class PhoneForm extends Component {
         const { countryCode, phoneType, submitted } = this.state
 
         return (
-            <Segment className='phone-input'>
-                <Form.Field>
-                    <label>Country:</label>
-                    <select
-                        className='country-code'
-                        name='countryCode'
-                        onChange={this.handleChange}
-                        value={countryCode}
-                        disabled={submitted}
-                    >
-                        {countryCodeList}
-                    </select>
-                </Form.Field>
+                <Segment className='phone-input'>
+                    <Form.Field>
+                        <label>Country:</label>
+                        <select
+                            className='country-code'
+                            name='countryCode'
+                            onChange={this.handleChange}
+                            value={countryCode}
+                            disabled={submitted}
+                        >
+                            {countryCodeList}
+                        </select>
+                    </Form.Field>
 
-                <Form.Field required>
-                    <label>Phone Number</label>
-                    <Cleave
-                        className="css-phone"
-                        options={{ phone: true, phoneRegionCode: countryCode }}
-                        onChange={this.onPhoneChange}
-                        disabled={submitted}
-                    />
-                </Form.Field>
-
-                <Form.Field>
-                    <label>Phone Type:</label>
-                    <Dropdown
-                        search
-                        selection
-                        name='phoneType'
-                        options={phoneTypes}
-                        onChange={this.onPhoneTypeChange}
-                        value={phoneType}
-                        disabled={submitted}
-                    />
-                </Form.Field>
-                {!submitted
-                    ? <Button
-                        positive
-                        content='Save'
-                        size='small'
-                        onClick={this.onSubmit}
-                        disabled={!this.validateForm()}
-                    />
-                    : <Button
-                        negative
-                        content='Delete'
-                        size='small'
-                        onClick={this.onDelete}
-                    />
-                }
-            </Segment>
+                    <Form.Field required>
+                        <label>Phone Number</label>
+                        <Cleave
+                            className="css-phone"
+                            options={{ phone: true, phoneRegionCode: countryCode }}
+                            onChange={this.onPhoneChange}
+                            disabled={submitted}
+                        />
+                    </Form.Field>
+                    <Form.Field>
+                        <label>Phone Type:</label>
+                        <Dropdown
+                            search
+                            selection
+                            name='phoneType'
+                            options={phoneTypes}
+                            onChange={this.onPhoneTypeChange}
+                            value={phoneType}
+                            disabled={submitted}
+                        />
+                    </Form.Field>
+                    {!submitted
+                        ? <Button
+                            className='add-btn'
+                            positive
+                            content='Save'
+                            size='small'
+                            onClick={this.onSubmit}
+                            disabled={!this.validateForm()}
+                        />
+                        : <Button
+                            className='add-btn'
+                            negative
+                            content='Delete'
+                            size='small'
+                            onClick={this.onDelete}
+                        />
+                    }
+                </Segment>
         )
     }
 }

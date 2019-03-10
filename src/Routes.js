@@ -11,6 +11,7 @@ import WorkordersView from './containers/workorders/WorkordersView'
 import WorkordersEdit from './containers/workorders/WorkordersEdit'
 import ClientList from './containers/clients/ClientList'
 import NewClient from './containers/clients/NewClient'
+import ClientView from './containers/clients/ClientView'
 import ContactList from './containers/contacts/ContactList'
 import NewContact from './containers/contacts/NewContact'
 import NotFound from './containers/static/NotFound'
@@ -25,6 +26,7 @@ export default ({ childProps }) =>
         <AuthenticatedRoute path="/workorders/edit/:id" exact component={WorkordersEdit} props={childProps} />
         <AuthenticatedRoute path='/clients/new' exact component={NewClient} props={childProps} />
         <AuthenticatedRoute path='/clients' exact component={ClientList} props={childProps} />
+        <AuthenticatedRoute path='/clients/:id' exact component={ClientView} props={childProps} />
         <AuthenticatedRoute path='/contacts/new' exact component={NewContact} props={childProps}/>
         <AuthenticatedRoute path='/contacts' exact component={ContactList} props={childProps}/>
         { /* Finally, catch all unmatched routes */}

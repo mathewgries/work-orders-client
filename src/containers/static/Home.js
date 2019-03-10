@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import { PageHeader, ListGroup, ListGroupItem } from "react-bootstrap";
+import { List, Header, Segment } from 'semantic-ui-react'
 import { LinkContainer } from 'react-router-bootstrap'
 import { API } from 'aws-amplify'
 import "./Home.css";
@@ -21,7 +21,7 @@ export default class Home extends Component {
 		}
 
 		try {
-			const workorders = await this.workorders();
+			const workorders = await this.loadWorkorders();
 			this.setState({ workorders });
 		} catch (e) {
 			alert(e);
@@ -30,30 +30,26 @@ export default class Home extends Component {
 		this.setState({ isLoading: false });
 	}
 
-	workorders() {
-		const result = API.get('workorders', '/workorders');
-		return result
+	loadWorkorders() {
+		return API.get('workorders', '/workorders')
 	}
 
 	renderWorkordersList(workorders) {
 		return [{}].concat(workorders).map(
 			(workorder, i) =>
 				i !== 0
-					? <LinkContainer
-						key={workorder.workorderId}
-						to={`/workorders/${workorder.workorderId}`}
-					>
-						<ListGroupItem header={workorder.title}>
-							{"Created: " + new Date(workorder.createdAt).toLocaleString()}
-						</ListGroupItem>
-					</LinkContainer>
-					: <LinkContainer
-						key="new"
-						to="/workorders/new"
-					>
-						<ListGroupItem>
-							<h4><b>{"\uFF0B"}</b> Create a new workorder</h4>
-						</ListGroupItem>
+					? <Segment key={workorder.workorderId}>
+						<LinkContainer to={`/workorders/${workorder.workorderId}`}>
+							<List.Item>
+								<List.Header>{`Title: ${workorder.title}`}</List.Header>
+								{`Client: ${workorder.client.name}`} <br />
+								{`Contact: ${workorder.contact.name}`} <br />
+								{"Created: " + new Date(workorder.createdAt).toLocaleString()}
+							</List.Item>
+						</LinkContainer>
+					</Segment>
+					: <LinkContainer key="new" to="/workorders/new">
+						<List.Item><h4><b>{"\uFF0B"}</b> Create a new workorder</h4></List.Item>
 					</LinkContainer>
 		);
 	}
@@ -78,10 +74,11 @@ export default class Home extends Component {
 	renderWorkorders() {
 		return (
 			<div className="workorders">
-				<PageHeader>Your Workorders</PageHeader>
-				<ListGroup>
+				<Header as='h1'>Your Workorders</Header>
+				<hr />
+				<List>
 					{!this.state.isLoading && this.renderWorkordersList(this.state.workorders)}
-				</ListGroup>
+				</List>
 			</div>
 		);
 	}

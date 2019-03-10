@@ -1,0 +1,14 @@
+.phone-input {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.country-code {
+    display: none;
+}
+
+select {
+    -webkit-appearance: none; 
+    -moz-appearance: none;
+    appearance: none;       /* remove default arrow */
+ }

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import { Link } from 'react-router-dom'
-import { Loader } from 'semantic-ui-react'
+import { LinkContainer } from 'react-router-bootstrap'
+import { Loader, Segment, List, Header } from 'semantic-ui-react'
 import { API } from 'aws-amplify'
 
 export default class ClientList extends Component {
@@ -8,7 +8,7 @@ export default class ClientList extends Component {
         super(props)
         this.state = {
             isLoading: true,
-            clients: [],
+            clients: []
         }
     }
 
@@ -18,19 +18,48 @@ export default class ClientList extends Component {
         }
 
         try {
-            const clients = await this.clients()
-            this.setState({
-                clients,
-                isLoading: false
-            })
+            const clients = await this.loadClients()
+            this.setState({ clients })
         } catch (e) {
             alert(e.message)
         }
+
+        this.setState({ isLoading: false })
     }
 
-    clients() {
-        const result = API.get('clients', '/clients')
-        return result
+    loadClients() {
+        return API.get('clients', '/clients')
+    }
+
+    renderClientsList(clients) {
+        return [{}].concat(clients).map(
+            (client, i) =>
+                i !== 0
+                    ? <Segment key={client.clientId}>
+                        <LinkContainer to={`/clients/${client.clientId}`}>
+                            <List.Item>
+                                <List.Header>{`Client: ${client.name}`}</List.Header>
+                                <span>Contacts:</span>
+                                {client.contacts.map((contact) => <div key={contact.contactId}>{contact.name}</div>)}
+                            </List.Item>
+                        </LinkContainer>
+                    </Segment>
+                    : <LinkContainer key="new" to="/clients/new">
+                        <List.Item><h4><b>{"\uFF0B"}</b> Create a new client</h4></List.Item>
+                    </LinkContainer>
+        );
+    }
+
+    renderClients() {
+        return (
+            <div className="clients">
+                <Header as='h1'>Your Clients</Header>
+                <hr />
+                <List>
+                    {!this.state.isLoading && this.renderClientsList(this.state.clients)}
+                </List>
+            </div>
+        );
     }
 
     render() {
@@ -38,17 +67,7 @@ export default class ClientList extends Component {
             return <Loader />
         }
         return (
-            <div>
-                <h1>Client List</h1>
-                <div>
-                    <Link to='/clients/new' className='btn btn-primary'>Add Client</Link>
-                </div>
-                {this.state.clients.length === 0
-                    ? <div>No clients added yet</div>
-                    : <pre>{JSON.stringify(this.state.clients, null, 2)}</pre>}
-
-
-            </div>
+            <div>{this.renderClients()}</div>
         )
     }
 }
