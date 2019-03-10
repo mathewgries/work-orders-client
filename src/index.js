@@ -30,6 +30,26 @@ Amplify.configure({
           name: 'clients',
           endpoint: config.apiGateway.URL,
           region: config.apiGateway.REGION
+        },
+        {
+          name: 'contacts',
+          endpoint: config.apiGateway.URL,
+          region: config.apiGateway.REGION
+        },
+        {
+          name: 'workordersItems',
+          endpoint: config.apiGateway.URL,
+          region: config.apiGateway.REGION
+        },
+        {
+          name: 'address',
+          endpoint: config.apiGateway.URL,
+          region: config.apiGateway.REGION
+        },
+        {
+          name: 'phonenumbers',
+          endpoint: config.apiGateway.URL,
+          region: config.apiGateway.REGION
         }
       ]
     }

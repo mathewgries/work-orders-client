@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
-import { Form, Input, Dropdown, Button, Segment, Container } from 'semantic-ui-react'
-import Cleave from 'cleave.js/react'
-import CleavePhone from 'cleave.js/dist/addons/cleave-phone.i18n'
-import { countryCodes } from '../../utils/countryCodes'
+import { API } from 'aws-amplify'
+import { Form, Input, Loader, Segment } from 'semantic-ui-react'
+import PhoneFormList from '../phoneNumbers/PhoneFormList'
 import LoaderButton from '../../components/LoaderButton'
+import uuid from 'uuid'
 import './NewContact.css'
 
 const preferredMethods = [
@@ -13,90 +13,50 @@ const preferredMethods = [
     { text: 'Fax', value: 'Fax' }
 ]
 
-const phoneTypes = [
-    { text: 'Home', value: 'Hom e' },
-    { text: 'Cell', value: 'Cell' },
-    { text: 'Office', value: 'Office' },
-    { text: 'Fax', value: 'Fax' }
-]
-
-const countryCodeList = countryCodes.sort().map((cc) => {
-    return <option key={cc}>{cc}</option>
-})
-
-class PhoneInput extends Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            countryCode: 'US',
-            phoneNumber: '',
-            phoneType: ''
-        }
-    }
-
-    handleChange = (e) => {
-        const { name, value } = e.target
-        this.setState({ [name]: value })
-    }
-
-    onPhoneChange = (e) => {
-        console.log(e.target.value)
-        console.log(e.target.rawValue)
-    }
-
-    render() {
-        const { countryCode, phoneType, phoneNumber } = this.state
-
-        return (
-            <Segment className='phone-input'>
-                <Form.Field className='country-code'>
-                    <select
-                        name='countryCode'
-                        onChange={this.handleChange}
-                        value={countryCode}
-                    >
-                        {countryCodeList}
-                    </select>
-                </Form.Field>
-
-                <Form.Field>
-                    <Cleave
-                        className="css-phone"
-                        options={{ phone: true, phoneRegionCode: countryCode }}
-                        onChange={this.onPhoneChange}
-                    />
-                </Form.Field>
-
-                <Form.Field>
-                    <Dropdown
-                        search
-                        selection
-                        options={phoneTypes}
-                        value={phoneType}
-                    />
-                </Form.Field>
-
-                <Button
-                    primary
-                    content='Add Phone'
-                    size='medium'
-                />
-            </Segment>
-        )
-    }
-}
-
 export default class NewContact extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            isLoading: false,
+            isLoading: true,
             name: '',
             email: '',
-            client: null,
-            preferredMethod: null,
+            toggleNewClient: false,
+            clients: [],
+            client: {},
+            preferredContactMethod: null,
             phoneNumbers: [],
         }
+    }
+
+    async componentDidMount() {
+        if (!this.props.isAuthenticated) {
+            return
+        }
+
+        try {
+            const loader = await this.loadClients()
+            const clients = this.formatClientList(loader)
+            this.setState({ clients })
+        } catch (e) {
+            alert(e)
+        }
+
+        this.setState({ isLoading: false });
+    }
+
+    formatClientList = (clientList) => {
+        return clientList.map((client) => {
+            return {
+                key: client.clientId,
+                text: client.name,
+                value: client.name
+            }
+        })
+    }
+
+    loadClients() {
+        const result = API.get('clients', '/clients')
+        return result
     }
 
     validateForm() {
@@ -112,64 +72,137 @@ export default class NewContact extends Component {
         this.setState({ [name]: value })
     }
 
-    handleSubmit = (e) => {
+    handleClientChange = (e, { value, options }) => {
+        const option = options.filter((i) => i.value === value)
 
+        if (option.length === 0) {
+            const id = uuid.v1()
+
+            this.setState(() => ({
+                client: { clientId: id, name: value },
+                clients: [{ key: id, text: value, value: value }, ...this.state.clients],
+                toggleNewClient: true
+            }))
+        } else {
+            const buildClient = {
+                clientId: option[0].key,
+                name: option[0].value
+            }
+
+            this.setState(() => ({
+                client: buildClient,
+                toggleNewClient: false
+            }))
+        }
+    }
+
+    handleAddPhoneNumber = (phoneNumber) => {
+        this.setState((prev) => ({
+            phoneNumbers: prev.phoneNumbers.concat(phoneNumber)
+        }))
+    }
+
+    handleRemovePhoneNumber = (id) => {
+        this.setState((prev) => ({
+            phoneNumbers: prev.phoneNumbers.filter((pn) => pn.id !== id)
+        }))
+    }
+
+    toggleNewClient = () => {
+        this.setState({ toggleNewClient: true })
+    }
+
+    handleSubmit = async (e) => {
+        e.preventDefault(e)
+        const { name, email, client, preferredContactMethod } = this.state
+
+        this.setState({ isLoading: true });
+        try {
+            await this.createContact({
+                content: {
+                    contactId: uuid.v1(),
+                    clientId: client.clientId,
+                    name,
+                    email,
+                    preferredContactMethod
+                }
+            })
+            this.props.history.push('/contacts')
+        } catch (e) {
+            alert(e)
+            this.setState({ isLoading: false });
+        }
+    }
+
+    createContact(contact) {
+        return API.post('contacts', '/contacts', {
+            body: contact
+        })
     }
 
     render() {
-        const { name, email, client, preferredMethod } = this.state
+        if (this.state.isLoading) {
+            return <Loader />
+        }
+
+        const { name, email, client, preferredContactMethod } = this.state
         return (
             <Form onSubmit={this.handleSubmit}>
-                <Form.Field required>
-                    <label>Contact Name:</label>
-                    <Input
-                        name='name'
-                        value={name}
-                        onChange={this.handleChange}
-                    />
-                </Form.Field>
-                <Form.Group>
+                <Segment>
                     <Form.Field required>
-                        <label>Phone Numbers</label>
-                        <PhoneInput />
-                        {/* // PHONE INPUTS GO HERE
-                        // NEED MULTIPLE
-                        // ADD BUTTON TO RENDER NEW PHONE FORM 
-                     */}
+                        <label>Contact Name:</label>
+                        <Input
+                            name='name'
+                            value={name}
+                            onChange={this.handleChange}
+                        />
                     </Form.Field>
-                </Form.Group>
+                </Segment>
                 <Form.Field>
-                    <label>Email:</label>
-                    <Input
-                        type='email'
-                        name='email'
-                        value={email}
-                        onChange={this.handleChange}
+                    <label>Phone Numbers</label>
+                    <PhoneFormList
+                        addPhoneNumber={this.handleAddPhoneNumber}
+                        removePhoneNumber={this.handleRemovePhoneNumber}
                     />
                 </Form.Field>
-                <Form.Field>
-                    <label>Client Relation:</label>
-                    <Form.Dropdown
-                        search
-                        placeholder='Search client list...'
-                        selection
-                        onChange={this.handleSelectChange}
-                        name='client'
-                        value={client}
-                    />
-                </Form.Field>
-                <Form.Field>
-                    <label>Preffered Contact Method:</label>
-                    <Form.Dropdown
-                        search
-                        selection
-                        placeholder={`Contact's preffered contact method...`}
-                        options={preferredMethods}
-                        onChange={this.handleSelectChange}
-                        name='contactMethod'
-                        value={preferredMethod}
-                    />
-                </Form.Field>
+                <Segment>
+                    <Form.Field>
+                        <label>Email:</label>
+                        <Input
+                            type='email'
+                            name='email'
+                            value={email}
+                            onChange={this.handleChange}
+                        />
+                    </Form.Field>
+                    <Form.Field>
+                        <label>Client Relation:</label>
+                        <Form.Dropdown
+                            name='client'
+                            placeholder='Search client list...'
+                            search
+                            selection
+                            allowAdditions
+                            additionLabel='Create new client: '
+                            options={this.state.clients}
+                            value={client.name}
+                            onChange={this.handleClientChange}
+                        />
+                    </Form.Field>
+                    <Form.Field>
+                        <label>Preffered Contact Method:</label>
+                        <Form.Dropdown
+                            name='preferredContactMethod'
+                            placeholder={`Contact's preffered contact method...`}
+                            search
+                            selection
+                            options={preferredMethods}
+                            value={preferredContactMethod}
+                            onChange={this.handleSelectChange}
+                        />
+                    </Form.Field>
+                </Segment>
+
                 <LoaderButton
                     block
                     bsStyle="primary"

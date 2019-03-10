@@ -14,7 +14,8 @@
     "react-router-bootstrap": "^0.24.4",
     "react-router-dom": "^4.3.1",
     "react-scripts": "2.1.5",
-    "semantic-ui-react": "^0.85.0"
+    "semantic-ui-react": "^0.85.0",
+    "uuid": "^3.3.2"
   },
   "scripts": {
     "start": "react-scripts start",

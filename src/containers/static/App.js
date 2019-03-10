@@ -3,6 +3,7 @@ import { Auth } from 'aws-amplify'
 import { Link } from 'react-router-dom'
 import { Nav, Navbar, NavItem } from 'react-bootstrap'
 import { LinkContainer } from 'react-router-bootstrap'
+import { Container } from 'semantic-ui-react'
 import Routes from '../../Routes'
 
 class App extends Component {
@@ -47,7 +48,7 @@ class App extends Component {
 
 		return (
 			!this.state.isAuthenticating &&
-			<div className="App container">
+			<Container>
 				<Navbar fluid collapseOnSelect>
 					<Navbar.Header>
 						<Navbar.Brand>
@@ -80,7 +81,7 @@ class App extends Component {
 					</Navbar.Collapse>
 				</Navbar>
 				<Routes childProps={childProps} />
-			</div>
+			</Container>
 		);
 	}
 }

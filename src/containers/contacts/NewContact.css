@@ -1,12 +1,14 @@
 .phone-input {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-evenly;
 }
 
 .country-code {
-    height: 100%;
+    display: none;
 }
 
-.country-code select {
-    height: 100%;
-}
+select {
+    -webkit-appearance: none; 
+    -moz-appearance: none;
+    appearance: none;       /* remove default arrow */
+ }
