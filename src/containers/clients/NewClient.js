@@ -123,7 +123,6 @@ export default class NewClient extends Component {
 
     handleSubmit = async (e) => {
         e.preventDefault()
-        console.log('State: ', this.state)
         this.setState({ isLoading: true })
         const { name, email, type, contact, addresses, phonenumbers } = this.state
         try {
