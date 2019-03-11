@@ -14,6 +14,7 @@ import NewClient from './containers/clients/NewClient'
 import ClientView from './containers/clients/ClientView'
 import ContactList from './containers/contacts/ContactList'
 import NewContact from './containers/contacts/NewContact'
+import ContactView from './containers/contacts/ContactView'
 import NotFound from './containers/static/NotFound'
 
 export default ({ childProps }) =>
@@ -29,6 +30,7 @@ export default ({ childProps }) =>
         <AuthenticatedRoute path='/clients/:id' exact component={ClientView} props={childProps} />
         <AuthenticatedRoute path='/contacts/new' exact component={NewContact} props={childProps}/>
         <AuthenticatedRoute path='/contacts' exact component={ContactList} props={childProps}/>
+        <AuthenticatedRoute path='/contacts/:id' exact component={ContactView} props={childProps}/>
         { /* Finally, catch all unmatched routes */}
         <Route component={NotFound} />
     </Switch>

@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import Loading from '../../components/Loading'
 import { Link } from "react-router-dom";
 import { List, Header, Segment } from 'semantic-ui-react'
 import { LinkContainer } from 'react-router-bootstrap'
@@ -84,6 +85,9 @@ export default class Home extends Component {
 	}
 
 	render() {
+		if(this.state.isLoading){
+			return <Loading />
+		}
 		return (
 			<div className="Home">
 				{this.props.isAuthenticated
