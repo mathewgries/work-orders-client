@@ -57,7 +57,7 @@ export default class ContactList extends Component {
                         </LinkContainer>
                     </Segment>
                     : <LinkContainer key="new" to="/contacts/new">
-                        <List.Item><h4><b>{"\uFF0B"}</b> Create a new contacts</h4></List.Item>
+                        <List.Item><h4><b>{"\uFF0B"}</b> Create a new contact</h4></List.Item>
                     </LinkContainer>
         );
     }

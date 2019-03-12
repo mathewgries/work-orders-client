@@ -1,8 +1,11 @@
 import React, { Component } from 'react'
 import { Segment, Header, List, Loader } from 'semantic-ui-react'
 import { Link } from 'react-router-dom'
+import { getWorkorderById } from '../../api/workorders'
+import { getWorkorderItemsByWorkorderId } from '../../api/workordersItems'
+import { getContactById } from '../../api/contacts'
+import { getClientById } from '../../api/clients'
 import './WorkordersView.css'
-import { API } from 'aws-amplify'
 
 export default class WorkorderView extends Component {
     constructor(props) {
@@ -11,6 +14,7 @@ export default class WorkorderView extends Component {
             isLoading: true,
             workorder: null,
             contact: null,
+            client: null,
             workorderItems: []
         }
 
@@ -19,11 +23,11 @@ export default class WorkorderView extends Component {
     async componentDidMount() {
 
         try {
-            const workorder = await this.loadWorkorder()
-            const workorderItems = await this.loadWorkorderItems(workorder.workorderId)
-            const contact = await this.loadContact(workorder.contact.contactId)
-            const strippedContact = contact[0]
-            this.setState({ workorder, workorderItems, contact: strippedContact })
+            const workorder = await getWorkorderById(this.props.match.params.id)
+            const workorderItems = await getWorkorderItemsByWorkorderId(this.props.match.params.id)
+            const contact = await getContactById(workorder.contact.contactId)
+            const client = await getClientById(workorder.client.clientId)
+            this.setState({ workorder, workorderItems, contact, client })
         } catch (e) {
             alert(e)
         }
@@ -31,36 +35,22 @@ export default class WorkorderView extends Component {
         this.setState({ isLoading: false })
     }
 
-    loadWorkorder() {
-        return API.get('workorders', `/workorders/${this.props.match.params.id}`)
-    }
-
-    loadWorkorderItems(id) {
-        return API.get('workordersItems', '/workordersItems')
-            .then((items) => items.filter((item) => item.workorderId === id))
-    }
-
-    loadContact(id){
-        return API.get('contacts', '/contacts')
-            .then((contacts) => contacts.filter((contact) => contact.contactId === id))
-    }
-
-    getPhonenumberList(){
+    getPhonenumberList() {
         const { contact } = this.state
-        if(contact.phonenumbers.length === 0){
+        if (contact.phonenumbers.length === 0) {
             return <p>{'No numbers listed'}</p>
-        }else {
-            contact.phoneumbers.map((pn) =>{
+        } else {
+            contact.phoneumbers.map((pn) => {
                 return (
                     <div>
-                        
+
                     </div>
                 )
             })
         }
     }
 
-    formatWorkorderItem(workorderItem){
+    formatWorkorderItem(workorderItem) {
         return (
             <Segment key={workorderItem.workordersItemId}>
                 <List.Item>
@@ -77,7 +67,7 @@ export default class WorkorderView extends Component {
         if (this.state.isLoading) {
             return <Loader />
         }
-        const { workorder, workorderItems, contact} = this.state
+        const { workorder, workorderItems, contact } = this.state
         const { title, client, description } = workorder
 
         return (

@@ -1,8 +1,9 @@
 import React, { Component } from "react";
+import LoadingStatus from '../../components/LoadingStatus'
 import { Link } from "react-router-dom";
 import { List, Header, Segment } from 'semantic-ui-react'
 import { LinkContainer } from 'react-router-bootstrap'
-import { API } from 'aws-amplify'
+import { getWorkorders } from '../../api/workorders'
 import "./Home.css";
 
 export default class Home extends Component {
@@ -21,17 +22,13 @@ export default class Home extends Component {
 		}
 
 		try {
-			const workorders = await this.loadWorkorders();
+			const workorders = await getWorkorders();
 			this.setState({ workorders });
 		} catch (e) {
 			alert(e);
 		}
 
 		this.setState({ isLoading: false });
-	}
-
-	loadWorkorders() {
-		return API.get('workorders', '/workorders')
 	}
 
 	renderWorkordersList(workorders) {
@@ -84,6 +81,9 @@ export default class Home extends Component {
 	}
 
 	render() {
+		if(this.state.isLoading){
+			return <LoadingStatus />
+		}
 		return (
 			<div className="Home">
 				{this.props.isAuthenticated
