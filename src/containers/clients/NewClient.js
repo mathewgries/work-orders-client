@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Form, Input, Segment } from 'semantic-ui-react'
+import { Form, Dropdown, Segment } from 'semantic-ui-react'
 import AddressFormList from '../addresses/AddressFormList'
 import PhoneFormList from '../phoneNumbers/PhoneFormList'
 import LoaderButton from '../../components/LoaderButton'
@@ -196,13 +196,13 @@ export default class NewClient extends Component {
         })
     }
 
-    createAddress(address){
+    createAddress(address) {
         return API.post('address', '/address', {
             body: address
         })
     }
 
-    createPhonenumber(phonenumber){
+    createPhonenumber(phonenumber) {
         return API.post('phonenumbers', '/phonenumbers', {
             body: phonenumber
         })
@@ -211,83 +211,83 @@ export default class NewClient extends Component {
     render() {
         const { name, type, contact, email } = this.state
         return (
-            <div>
-                <Form onSubmit={this.handleSubmit}>
-                    <label>Details</label>
-                    <Segment>
-                        <Form.Field required>
-                            <label>Client Name:</label>
-                            <Input
-                                fluid
-                                name='name'
-                                value={name}
-                                placeholder='Enter client name'
-                                onChange={this.handleChange}
-                            />
-                        </Form.Field>
-                        <Form.Field required>
-                            <label>Client Type</label>
-                            <Form.Dropdown
-                                name='type'
-                                placeholder='Pick client type'
-                                search
-                                selection
-                                options={clientTypes}
-                                value={type}
-                                onChange={this.handleSelectChange}
-                            />
-                        </Form.Field>
-                        <Form.Field required>
-                            <label>Contact</label>
-                            <Form.Dropdown
-                                clearable
-                                search
-                                selection
-                                allowAdditions
-                                additionLabel='Ceate new contact: '
-                                placeholder='Select contact'
-                                options={this.state.contacts}
-                                onChange={this.handleContactChange}
-                                value={contact.name}
-                            />
-                        </Form.Field>
-                        <Form.Field>
-                            <label>Client email:</label>
-                            <Input
-                                fluid
-                                name='email'
-                                value={email}
-                                placeholder='Enter client email'
-                                onChange={this.handleChange}
-                            />
-                        </Form.Field>
-                    </Segment>
-                    <Form.Field>
-                        <label>Phone Numbers</label>
-                        <PhoneFormList
-                            addPhoneNumber={this.handleAddPhoneNumber}
-                            removePhoneNumber={this.handleRemovePhoneNumber}
+            <form onSubmit={this.handleSubmit} className='container'>
+                <label>Details</label>
+                <Segment>
+                    <div className='form-group'>
+                        <label>Client Name:</label>
+                        <input
+                            className='form-control'
+                            name='name'
+                            value={name}
+                            placeholder='Enter client name'
+                            onChange={this.handleChange}
                         />
-                    </Form.Field>
-                    <Form.Field>
-                        <label>Addresses</label>
-                        <AddressFormList
-                            addAddress={this.handleAddAddress}
-                            removeAddress={this.handleRemoveAddress}
+                    </div>
+                    <div className='form-group'>
+                        <label>Client Type</label>
+                        <Dropdown
+                            className='form-control'
+                            name='type'
+                            placeholder='Pick client type'
+                            search
+                            selection
+                            options={clientTypes}
+                            value={type}
+                            onChange={this.handleSelectChange}
                         />
-                    </Form.Field>
-                    <LoaderButton
-                        block
-                        bsStyle="primary"
-                        bsSize="large"
-                        disabled={!this.validateForm()}
-                        type="submit"
-                        isLoading={this.state.isLoading}
-                        text="Create"
-                        loadingText="Creating…"
+                    </div>
+                    <div className='form-group'>
+                        <label>Contact</label>
+                        <Dropdown
+                            className='form-control'
+                            clearable
+                            search
+                            selection
+                            allowAdditions
+                            additionLabel='Ceate new contact: '
+                            placeholder='Select contact'
+                            options={this.state.contacts}
+                            onChange={this.handleContactChange}
+                            value={contact.name}
+                        />
+                    </div>
+                    <div className='form-group'>
+                        <label>Client email:</label>
+                        <input
+                            className='form-control'
+                            name='email'
+                            value={email}
+                            placeholder='Enter client email'
+                            onChange={this.handleChange}
+                        />
+                    </div>
+                </Segment>
+                <div className='form-group'>
+                    <label>Phone Numbers</label>
+                    <PhoneFormList
+                        addPhoneNumber={this.handleAddPhoneNumber}
+                        removePhoneNumber={this.handleRemovePhoneNumber}
                     />
-                </Form>
-            </div>
+                </div>
+                <div className='form-group'>
+                    <label>Addresses</label>
+                    <AddressFormList
+                        addAddress={this.handleAddAddress}
+                        removeAddress={this.handleRemoveAddress}
+                    />
+                </div>
+                <LoaderButton
+                    block
+                    bsStyle="primary"
+                    bsSize="large"
+                    disabled={!this.validateForm()}
+                    type="submit"
+                    isLoading={this.state.isLoading}
+                    text="Create"
+                    loadingText="Creating…"
+                />
+            </form>
         )
     }
 }

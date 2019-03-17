@@ -1,10 +1,8 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { Auth } from 'aws-amplify'
 import { Link } from 'react-router-dom'
-import { Nav, Navbar, NavItem } from 'react-bootstrap'
-import { LinkContainer } from 'react-router-bootstrap'
-import { Container } from 'semantic-ui-react'
 import Routes from '../../Routes'
+import './App.css'
 
 class App extends Component {
 	constructor(props) {
@@ -48,40 +46,50 @@ class App extends Component {
 
 		return (
 			!this.state.isAuthenticating &&
-			<Container>
-				<Navbar fluid collapseOnSelect>
-					<Navbar.Header>
-						<Navbar.Brand>
-							<Link to="/">Work Orders</Link>
-						</Navbar.Brand>
-						<Navbar.Toggle />
-					</Navbar.Header>
-					<Navbar.Collapse>
-						<Nav>
-							<LinkContainer to='/clients'>
-								<NavItem>Clients</NavItem>
-							</LinkContainer>
-							<LinkContainer to='/contacts'>
-								<NavItem>Contacts</NavItem>
-							</LinkContainer>
-						</Nav>
-						<Nav pullRight>
-							{this.state.isAuthenticated
-								? <NavItem onClick={this.handleLogout}>Logout</NavItem>
-								: <Fragment>
-									<LinkContainer to="/signup">
-										<NavItem>Signup</NavItem>
-									</LinkContainer>
-									<LinkContainer to="/login">
-										<NavItem>Login</NavItem>
-									</LinkContainer>
-								</Fragment>
-							}
-						</Nav>
-					</Navbar.Collapse>
-				</Navbar>
+			<div className='app'>
+				<nav className='navbar navbar-expand-md navbar-dark bg-warning'>
+					<div className='container-fluid'>
+						<Link className='navbar-brand' to="/">Work Orders</Link>
+						<button
+							className="navbar-toggler"
+							type="button"
+							data-toggle="collapse"
+							data-target="#navbarSupportedContent"
+							aria-controls="navbarSupportedContent"
+							aria-expanded="true"
+							aria-label="Toggle navigation"
+						>
+							<span className="navbar-toggler-icon"></span>
+						</button>
+						<div className='collapse navbar-collapse' id="navbarSupportedContent">
+							<ul className="nav navbar-nav mr-auto">
+								<li className='nav-item active'>
+									<Link className='nav-link' to='/clients'>Clients</Link>
+								</li>
+								<li className='nav-item'>
+									<Link className='nav-link' to='/contacts'>Contacts</Link>
+								</li>
+
+								<li className='nav-item'>
+									{this.state.isAuthenticated
+										? <button className='btn btn-info' onClick={this.handleLogout}>Logout</button>
+										: <ul className="navbar-nav mr-auto">
+											<li className='nav-item'>
+												<Link className='nav-link' to="/signup">Signup</Link>
+											</li>
+											<li className='nav-item'>
+												<Link className='nav-link' to="/login">Login</Link>
+											</li>
+										</ul>
+									}
+								</li>
+							</ul>
+						</div>
+					</div>
+				</nav>
 				<Routes childProps={childProps} />
-			</Container>
+
+			</div >
 		);
 	}
 }

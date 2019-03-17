@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
-import { Form, Input, Segment, Radio, Dropdown, Button } from 'semantic-ui-react'
+import { Segment, Radio, Dropdown, Button } from 'semantic-ui-react'
 import { abbreviatedStates } from '../../utils/abbreviatedStates'
+import './Address.css'
 
 const stateList = abbreviatedStates.sort().map((state) => {
     return {
@@ -25,8 +26,8 @@ export default class AddressForm extends Component {
         }
     }
 
-    componentDidMount(){
-        this.setState({id: this.props.id})
+    componentDidMount() {
+        this.setState({ id: this.props.id })
     }
 
     validateForm() {
@@ -62,7 +63,7 @@ export default class AddressForm extends Component {
     onSubmit = (e) => {
         e.preventDefault()
         const { id, line1, line2, city, state, zipCode, zipCode4, type } = this.state
-        
+
         this.props.addAddress({
             addressType: type,
             line1,
@@ -83,97 +84,102 @@ export default class AddressForm extends Component {
         return (
             <Segment>
                 <label>Address Type:</label>
-                <Form.Group>
-                    <Form.Field>
-                        <Radio
-                            label='Billing'
-                            name='type'
-                            value='Billing'
-                            checked={type === 'Billing'}
-                            onChange={this.handleRadioToggle}
-                            disabled={submitted}
-                        />
-                    </Form.Field>
-                    <Form.Field>
-                        <Radio
-                            label='Mailing'
-                            name='type'
-                            value='Mailing'
-                            checked={type === 'Mailing'}
-                            onChange={this.handleRadioToggle}
-                            disabled={submitted}
-                        />
-                    </Form.Field>
-                    <Form.Field>
-                        <Radio
-                            label='Other'
-                            name='type'
-                            value='Other'
-                            checked={type === 'Other'}
-                            onChange={this.handleRadioToggle}
-                            disabled={submitted}
-                        />
-                    </Form.Field>
-                </Form.Group>
-                <Form.Field required>
+                <div className='form-group'>
+                    <Radio
+                        className='radio'
+                        label='Billing'
+                        name='type'
+                        value='Billing'
+                        checked={type === 'Billing'}
+                        onChange={this.handleRadioToggle}
+                        disabled={submitted}
+                    />
+                    <Radio
+                        className='radio'
+                        label='Mailing'
+                        name='type'
+                        value='Mailing'
+                        checked={type === 'Mailing'}
+                        onChange={this.handleRadioToggle}
+                        disabled={submitted}
+                    />
+                    <Radio
+                        className='radio'
+                        label='Other'
+                        name='type'
+                        value='Other'
+                        checked={type === 'Other'}
+                        onChange={this.handleRadioToggle}
+                        disabled={submitted}
+                    />
+                </div>
+                <div className='form-group'>
                     <label>Line 1:</label>
-                    <Input
+                    <input
+                        className='form-control'
                         name='line1'
                         value={line1}
                         onChange={this.handleChange}
                         disabled={submitted}
                     />
-                </Form.Field>
-                <Form.Field>
+                </div>
+                <div className='form-group'>
                     <label>Line 2:</label>
-                    <Input
+                    <input
+                        className='form-control'
                         name='line2'
                         value={line2}
                         onChange={this.handleChange}
                         disabled={submitted}
                     />
-                </Form.Field>
-                <Form.Field required>
-                    <label>State:</label>
-                    <Dropdown
-                        selection
-                        search
-                        name='state'
-                        options={stateList}
-                        onChange={this.handleStateChange}
-                        value={state}
-                        disabled={submitted}
-                    />
-                </Form.Field>
-                <Form.Field required>
-                    <label>City:</label>
-                    <Input
-                        name='city'
-                        value={city}
-                        onChange={this.handleChange}
-                        disabled={submitted}
-                    />
-                </Form.Field>
-                <Form.Group>
-                    <Form.Field required>
-                        <label>Zip Code:</label>
-                        <Input
-                            name='zipCode'
-                            value={zipCode}
-                            onChange={this.handleChange}
-                            disabled={submitted}
-                        />
-                    </Form.Field>
-                    <Form.Field>
-                        <label>Extension (optional)</label>
-                        <Input
-                            name='zipCode4'
-                            value={zipCode4}
-                            onChange={this.handleChange}
-                            disabled={submitted}
-                        />
-                    </Form.Field>
-                </Form.Group>
+                </div>
+                <div className='form-group'>
+                    <div className='row'>
+                        <div className='col'>
+                            <label>State:</label>
+                            <Dropdown
+                                className='form-control'
+                                selection
+                                search
+                                name='state'
+                                options={stateList}
+                                onChange={this.handleStateChange}
+                                value={state}
+                                disabled={submitted}
+                            />
+                        </div>
+                        <div className='col'>
+                            <label>City:</label>
+                            <input
+                                className='form-control'
+                                name='city'
+                                value={city}
+                                onChange={this.handleChange}
+                                disabled={submitted}
+                            />
+                        </div>
+                        <div className='col'>
+                            <label>Zip Code:</label>
+                            <input
+                                className='form-control'
+                                name='zipCode'
+                                value={zipCode}
+                                onChange={this.handleChange}
+                                disabled={submitted}
+                            />
+                        </div>
+                        <div className='col'>
+                            <label>Extension (optional)</label>
+                            <input
+                                className='form-control'
+                                name='zipCode4'
+                                value={zipCode4}
+                                onChange={this.handleChange}
+                                disabled={submitted}
+                            />
+                        </div>
+                    </div>
+                </div>
                 {!submitted
                     ? <Button
                         positive

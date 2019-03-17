@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { API } from 'aws-amplify'
-import { Form, Input, Loader, Segment } from 'semantic-ui-react'
+import { Dropdown, Loader, Segment } from 'semantic-ui-react'
 import PhoneFormList from '../phoneNumbers/PhoneFormList'
 import LoaderButton from '../../components/LoaderButton'
 import uuid from 'uuid'
@@ -151,7 +151,7 @@ export default class NewContact extends Component {
         })
     }
 
-    createClient(client){
+    createClient(client) {
         return API.post('clients', '/clients', {
             body: client
         })
@@ -164,60 +164,63 @@ export default class NewContact extends Component {
 
         const { name, email, client, preferredContactMethod } = this.state
         return (
-            <Form onSubmit={this.handleSubmit}>
-                    <Segment>
-                        <Form.Field required>
-                            <label>Contact Name:</label>
-                            <Input
-                                name='name'
-                                value={name}
-                                onChange={this.handleChange}
-                            />
-                        </Form.Field>
-                        <Form.Field>
-                            <label>Client Relation:</label>
-                            <Form.Dropdown
-                                name='client'
-                                placeholder='Search client list...'
-                                search
-                                selection
-                                allowAdditions
-                                additionLabel='Create new client: '
-                                options={this.state.clients}
-                                value={client.name}
-                                onChange={this.handleClientChange}
-                            />
-                        </Form.Field>
-                        <Form.Field>
-                            <label>Email:</label>
-                            <Input
-                                type='email'
-                                name='email'
-                                value={email}
-                                onChange={this.handleChange}
-                            />
-                        </Form.Field>
-
-                        <Form.Field>
-                            <label>Preffered Contact Method:</label>
-                            <Form.Dropdown
-                                name='preferredContactMethod'
-                                placeholder={`Contact's preffered contact method...`}
-                                search
-                                selection
-                                options={preferredMethods}
-                                value={preferredContactMethod}
-                                onChange={this.handleSelectChange}
-                            />
-                        </Form.Field>
-                    </Segment>
-                <Form.Field>
-                    <label>Phone Numbers</label>
-                    <PhoneFormList
-                        addPhoneNumber={this.handleAddPhoneNumber}
-                        removePhoneNumber={this.handleRemovePhoneNumber}
-                    />
-                </Form.Field>
+            <form onSubmit={this.handleSubmit} className='container'>
+                <div>
+                    <div className='form-group'>
+                        <label>Contact Name:</label>
+                        <input
+                            className='form-control'
+                            name='name'
+                            value={name}
+                            onChange={this.handleChange}
+                        />
+                    </div>
+                    <div className='form-group'>
+                        <label>Client Relation:</label>
+                        {/* Replace with select element */}
+                        <Dropdown
+                            className='form-control'
+                            name='client'
+                            placeholder='Search client list...'
+                            search
+                            selection
+                            allowAdditions
+                            additionLabel='Create new client: '
+                            options={this.state.clients}
+                            value={client.name}
+                            onChange={this.handleClientChange}
+                        />
+                    </div>
+                    <div className='form-group'>
+                        <label>Email:</label>
+                        <input
+                            className='form-control'
+                            type='email'
+                            name='email'
+                            value={email}
+                            onChange={this.handleChange}
+                        />
+                    </div>
+                    <div className='form-group'>
+                        <label>Preferred Contact Method:</label>
+                        {/* Replace with select element */}
+                        <Dropdown
+                            className='form-control'
+                            name='preferredContactMethod'
+                            placeholder={`Contact's preffered contact method...`}
+                            search
+                            selection
+                            options={preferredMethods}
+                            value={preferredContactMethod}
+                            onChange={this.handleSelectChange}
+                        />
+                    </div>
+                </div>
+                <label>Phone Numbers</label>
+                <PhoneFormList
+                    addPhoneNumber={this.handleAddPhoneNumber}
+                    removePhoneNumber={this.handleRemovePhoneNumber}
+                />
                 <LoaderButton
                     block
                     bsStyle="primary"
@@ -228,7 +231,7 @@ export default class NewContact extends Component {
                     text="Create"
                     loadingText="Creating…"
                 />
-            </Form >
+            </form >
         )
     }
 }

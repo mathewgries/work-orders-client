@@ -59,11 +59,11 @@ export default class WorkordersItemsFormsList extends Component {
                     )
                 })}
                 {toggleAddButton &&
-                    <Button
-                        primary
-                        content='Add Another Item'
+                    <button
+                        style={{marginBottom: '10px'}}
+                        className='btn btn-primary'
                         onClick={this.addToList}
-                    />}
+                    >Add Another Item</button>}
             </div>
         )
     }

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Form, Dropdown, Button, Segment } from 'semantic-ui-react'
+import { Dropdown, Button, Segment } from 'semantic-ui-react'
 import Cleave from 'cleave.js/react'
 import CleavePhone from 'cleave.js/dist/addons/cleave-phone.i18n'
 import { countryCodes } from '../../utils/countryCodes'
@@ -84,32 +84,36 @@ export default class PhoneForm extends Component {
         const { countryCode, phoneType, submitted } = this.state
 
         return (
-                <Segment className='phone-input'>
-                    <Form.Field>
+            <Segment>
+                <div className='phone-input'>
+                    <div className='form-group'>
                         <label>Country:</label>
                         <select
-                            className='country-code'
+                            className='country-code form-control'
                             name='countryCode'
                             onChange={this.handleChange}
                             value={countryCode}
                             disabled={submitted}
                         >
-                            {countryCodeList}
+                            {
+                                countryCodes.sort().map((cc) => {
+                                    return <option key={cc}>{cc}</option>
+                                })}
                         </select>
-                    </Form.Field>
-
-                    <Form.Field required>
-                        <label>Phone Number</label>
+                    </div>
+                    <div className='form-group'>
+                        <label>Phone Number:</label>
                         <Cleave
-                            className="css-phone"
+                            className="css-phone form-control"
                             options={{ phone: true, phoneRegionCode: countryCode }}
                             onChange={this.onPhoneChange}
                             disabled={submitted}
                         />
-                    </Form.Field>
-                    <Form.Field>
+                    </div>
+                    <div className='form-group'>
                         <label>Phone Type:</label>
                         <Dropdown
+                            className='form-control'
                             search
                             selection
                             name='phoneType'
@@ -118,25 +122,20 @@ export default class PhoneForm extends Component {
                             value={phoneType}
                             disabled={submitted}
                         />
-                    </Form.Field>
-                    {!submitted
-                        ? <Button
-                            className='add-btn'
-                            positive
-                            content='Save'
-                            size='small'
-                            onClick={this.onSubmit}
-                            disabled={!this.validateForm()}
-                        />
-                        : <Button
-                            className='add-btn'
-                            negative
-                            content='Delete'
-                            size='small'
-                            onClick={this.onDelete}
-                        />
-                    }
-                </Segment>
+                    </div>
+                </div>
+                {!submitted
+                    ? <button
+                        className='btn btn-success'
+                        onClick={this.onSubmit}
+                        disabled={!this.validateForm()}
+                    >Save</button>
+                    : <button
+                        className='btn btn-danger'
+                        onClick={this.onDelete}
+                    >Remove</button>
+                }
+            </Segment>
         )
     }
 }

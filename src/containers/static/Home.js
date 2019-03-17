@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import LoadingStatus from '../../components/LoadingStatus'
-import { Link } from "react-router-dom";
-import { List, Header, Segment } from 'semantic-ui-react'
-import { LinkContainer } from 'react-router-bootstrap'
 import { getWorkorders } from '../../api/workorders'
+import { getClients } from '../../api/clients'
+import { getContacts } from '../../api/contacts'
+import { Link } from "react-router-dom";
 import "./Home.css";
 
 export default class Home extends Component {
@@ -12,6 +12,8 @@ export default class Home extends Component {
 
 		this.state = {
 			isLoading: true,
+			clients: [],
+			contacts: [],
 			workorders: []
 		};
 	}
@@ -22,8 +24,10 @@ export default class Home extends Component {
 		}
 
 		try {
-			const workorders = await getWorkorders();
-			this.setState({ workorders });
+			const workorders = await getWorkorders()
+			const clients = await getClients()
+			const contacts = await getContacts()
+			this.setState({ workorders, clients, contacts });
 		} catch (e) {
 			alert(e);
 		}
@@ -31,24 +35,36 @@ export default class Home extends Component {
 		this.setState({ isLoading: false });
 	}
 
+	matchClient(clientId) {
+		const result = this.state.clients.filter((client) =>
+			client.clientId === clientId)
+		return result[0]
+	}
+
+
+	matchContact(contactId) {
+		const result = this.state.contacts.filter((contact) =>
+			contact.contactId === contactId)
+		return result[0]
+	}
+
 	renderWorkordersList(workorders) {
-		return [{}].concat(workorders).map(
-			(workorder, i) =>
-				i !== 0
-					? <Segment key={workorder.workorderId}>
-						<LinkContainer to={`/workorders/${workorder.workorderId}`}>
-							<List.Item>
-								<List.Header>{`Title: ${workorder.title}`}</List.Header>
-								{`Client: ${workorder.client.name}`} <br />
-								{`Contact: ${workorder.contact.name}`} <br />
-								{"Created: " + new Date(workorder.createdAt).toLocaleString()}
-							</List.Item>
-						</LinkContainer>
-					</Segment>
-					: <LinkContainer key="new" to="/workorders/new">
-						<List.Item><h4><b>{"\uFF0B"}</b> Create a new workorder</h4></List.Item>
-					</LinkContainer>
-		);
+		return workorders.map((workorder, i) => {
+			let client = this.matchClient(workorder.clientId)
+			let contact = this.matchContact(workorder.contactId)
+			return (
+				<div key={workorder.workorderId} className='main-list-item'>
+					<Link to={`/workorders/${workorder.workorderId}`}>
+						<div>
+							<h5>{`Title: ${workorder.title}`}</h5>
+							<div className='card-list-item'>{`Client: ${client.name}`}</div> <br />
+							<div className='card-list-item'>{`Contact: ${contact.name}`}</div> <br />
+							<div className='card-list-item'>{"Created: " + new Date(workorder.createdAt).toLocaleString()}</div>
+						</div>
+					</Link>
+				</div>
+			)
+		});
 	}
 
 	renderLander() {
@@ -57,7 +73,7 @@ export default class Home extends Component {
 				<h1>Work Orders</h1>
 				<p>Manage your projects, clients, and account</p>
 				<div>
-					<Link to="/login" className="btn btn-info btn-lg">
+					<Link to="/login" className="btn btn-warning btn-lg">
 						Login
         			</Link>
 					<Link to="/signup" className="btn btn-success btn-lg">
@@ -70,20 +86,21 @@ export default class Home extends Component {
 
 	renderWorkorders() {
 		return (
-			<div className="workorders">
-				<Header as='h1'>Your Workorders</Header>
+			<div className="workorders container">
+				<h1>Your Workorders</h1>
 				<hr />
-				<List>
+				<div key="new" to="/workorders/new">
+					<Link to="/workorders/new"><h4><b>{"\uFF0B"}</b> Create a new workorder</h4></Link>
+				</div>
+				<div className='main-list'>
 					{!this.state.isLoading && this.renderWorkordersList(this.state.workorders)}
-				</List>
+				</div>
 			</div>
 		);
 	}
 
 	render() {
-		if(this.state.isLoading){
-			return <LoadingStatus />
-		}
+
 		return (
 			<div className="Home">
 				{this.props.isAuthenticated

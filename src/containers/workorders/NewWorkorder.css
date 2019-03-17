@@ -1,9 +1,11 @@
-.NewWorkorder form {
-    padding-bottom: 15px;
-  }
-  
+/* form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  } */
+/*   
   .NewWorkorder form textarea {
     height: 300px;
     font-size: 24px;
-  }
+  } */
 

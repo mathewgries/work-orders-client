@@ -1,14 +1,17 @@
 import React, { Component } from 'react'
-import { LinkContainer } from 'react-router-bootstrap'
-import { Loader, Segment, List, Header } from 'semantic-ui-react'
-import { API } from 'aws-amplify'
+import { Link } from 'react-router-dom'
+import LoadingStatus from '../../components/LoadingStatus'
+import { getClients } from '../../api/clients'
+import { getContacts } from '../../api/contacts'
+import './Clients.css'
 
 export default class ClientList extends Component {
     constructor(props) {
         super(props)
         this.state = {
             isLoading: true,
-            clients: []
+            clients: [],
+            contacts: []
         }
     }
 
@@ -18,8 +21,9 @@ export default class ClientList extends Component {
         }
 
         try {
-            const clients = await this.loadClients()
-            this.setState({ clients })
+            const clients = await getClients()
+            const contacts = await getContacts()
+            this.setState({ clients, contacts })
         } catch (e) {
             alert(e.message)
         }
@@ -27,44 +31,41 @@ export default class ClientList extends Component {
         this.setState({ isLoading: false })
     }
 
-    loadClients() {
-        return API.get('clients', '/clients')
+    matchContacts(clientId) {
+        return this.state.contacts.filter((contact) =>
+            contact.clientId === clientId
+        ).map((contact) => contact.name)
     }
 
     renderClientsList(clients) {
-        return [{}].concat(clients).map(
-            (client, i) =>
-                i !== 0
-                    ? <Segment key={client.clientId}>
-                        <LinkContainer to={`/clients/${client.clientId}`}>
-                            <List.Item>
-                                <List.Header>{`Client: ${client.name}`}</List.Header>
-                                <span>Contacts:</span>
-                                {client.contacts.map((contact) => <div key={contact.contactId}>{contact.name}</div>)}
-                            </List.Item>
-                        </LinkContainer>
-                    </Segment>
-                    : <LinkContainer key="new" to="/clients/new">
-                        <List.Item><h4><b>{"\uFF0B"}</b> Create a new client</h4></List.Item>
-                    </LinkContainer>
+        return this.state.clients.map((client) =>
+            <div key={client.clientId} className='main-list-item'>
+                <Link to={`/clients/${client.clientId}`}>
+                    <h5>{`Client:`}</h5>
+                    {client.name}
+                    <h5>{`Contacts:`}</h5>
+                    {this.matchContacts(client.clientId)}
+                </Link>
+            </div>
         );
     }
 
     renderClients() {
         return (
-            <div className="clients">
-                <Header as='h1'>Your Clients</Header>
+            <div className="clients container">
+                <h1>Your Clients</h1>
                 <hr />
-                <List>
+                <Link to="/clients/new"><h4><b>{"\uFF0B"}</b> Create a new client</h4></Link>
+                <div className='main-list'>
                     {!this.state.isLoading && this.renderClientsList(this.state.clients)}
-                </List>
+                </div>
             </div>
         );
     }
 
     render() {
         if (this.state.isLoading) {
-            return <Loader />
+            return <LoadingStatus />
         }
         return (
             <div>{this.renderClients()}</div>

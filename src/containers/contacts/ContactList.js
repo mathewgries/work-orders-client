@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react'
-import { LinkContainer } from 'react-router-bootstrap'
-import { List, Segment, Header } from 'semantic-ui-react'
-import { API } from 'aws-amplify'
+import { getClients } from '../../api/clients'
+import { getContacts } from '../../api/contacts'
+import { Link } from 'react-router-dom'
 
 export default class ContactList extends Component {
     constructor(props) {
@@ -19,8 +19,10 @@ export default class ContactList extends Component {
         }
 
         try {
-            const contacts = await this.loadContacts()
-            const clients = await this.loadClients()
+            const contacts = await getContacts()
+            console.log('Contacts: ', contacts)
+            const clients = await getClients()
+            console.log('Clients: ', clients)
 
             this.setState({ contacts, clients })
         } catch (e) {
@@ -30,46 +32,34 @@ export default class ContactList extends Component {
         this.setState({ isLoading: false });
     }
 
-    loadContacts() {
-        return API.get('contacts', '/contacts')
-    }
-
-    loadClients() {
-        return API.get('clients', '/clients')
-    }
-
     getClientName(contact) {
-        const client = this.state.clients.filter((client) => client.clientId === contact.clientId)
-        return client[0].name
+        return this.state.clients.filter((client) =>
+            client.clientId === contact.clientId)
+            .map((contact) => contact.name)
     }
 
     renderContactsList(contacts) {
         return [{}].concat(contacts).map(
             (contact, i) =>
-                i !== 0
-                    ? <Segment key={contact.contactId}>
-                        <LinkContainer to={`/contacts/${contact.contactId}`}>
-                            <List.Item>
-                                <List.Header>{`Contact: ${contact.name}`}</List.Header>
-                                {`Client:  ${this.getClientName(contact)}`} <br />
-                                {"Created: " + new Date(contact.createdAt).toLocaleString()}
-                            </List.Item>
-                        </LinkContainer>
-                    </Segment>
-                    : <LinkContainer key="new" to="/contacts/new">
-                        <List.Item><h4><b>{"\uFF0B"}</b> Create a new contact</h4></List.Item>
-                    </LinkContainer>
+                <div key={contact.contactId} className='main-list-item'>
+                    <Link to={`/contacts/${contact.contactId}`}>
+                        <h5>{`Contact: ${contact.name}`}</h5>
+                        <p>{`Client:  ${this.getClientName(contact)}`}</p> <br />
+                        <p>{"Created: " + new Date(contact.createdAt).toLocaleString()}</p>
+                    </Link>
+                </div>
         );
     }
 
     renderContacts() {
         return (
-            <div className="contacts">
-                <Header as='h1'>Your Contact</Header>
+            <div className="contacts container">
+                <h1>Your Contact</h1>
                 <hr />
-                <List>
+                <Link key="new" to="/contacts/new"><h4><b>{"\uFF0B"}</b> Create a new contact</h4></Link>
+                <div className='main-list'>
                     {!this.state.isLoading && this.renderContactsList(this.state.contacts)}
-                </List>
+                </div>
             </div>
         );
     }

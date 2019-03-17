@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-import { Segment, Header, List, Loader } from 'semantic-ui-react'
+import LoadingStatus from '../../components/LoadingStatus'
+import { Segment, List, Table, Card, Label } from 'semantic-ui-react'
 import { Link } from 'react-router-dom'
 import { getWorkorderById } from '../../api/workorders'
 import { getWorkorderItemsByWorkorderId } from '../../api/workordersItems'
@@ -7,15 +8,42 @@ import { getContactById } from '../../api/contacts'
 import { getClientById } from '../../api/clients'
 import './WorkordersView.css'
 
+class WorkorderItemsTable extends Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            overallTotal: 0
+        }
+    }
+
+    componentDidMount() {
+        const { workorderItems } = this.props
+        const getTotals = workorderItems.map((item) => item.total)
+        const overallTotal = getTotals.reduce((total, amount) => total + amount)
+
+        this.setState({ overallTotal })
+    }
+
+    render() {
+        const { workorderItems } = this.props
+
+        return (
+            <div>
+
+            </div>
+        )
+    }
+}
+
 export default class WorkorderView extends Component {
     constructor(props) {
         super(props)
         this.state = {
             isLoading: true,
-            workorder: null,
-            contact: null,
-            client: null,
-            workorderItems: []
+            workorder: {},
+            contact: {},
+            client: {},
+            workorderItems: null
         }
 
     }
@@ -24,10 +52,15 @@ export default class WorkorderView extends Component {
 
         try {
             const workorder = await getWorkorderById(this.props.match.params.id)
-            const workorderItems = await getWorkorderItemsByWorkorderId(this.props.match.params.id)
-            const contact = await getContactById(workorder.contact.contactId)
-            const client = await getClientById(workorder.client.clientId)
-            this.setState({ workorder, workorderItems, contact, client })
+            const workorderItems = await getWorkorderItemsByWorkorderId(workorder.workorderId)
+            const contact = await getContactById(workorder.contactId)
+            const client = await getClientById(workorder.clientId)
+            this.setState(() => ({
+                workorder,
+                workorderItems,
+                contact,
+                client
+            }))
         } catch (e) {
             alert(e)
         }
@@ -37,59 +70,86 @@ export default class WorkorderView extends Component {
 
     getPhonenumberList() {
         const { contact } = this.state
-        if (contact.phonenumbers.length === 0) {
-            return <p>{'No numbers listed'}</p>
-        } else {
-            contact.phoneumbers.map((pn) => {
+        if (contact.phonenumbers.length > 0) {
+            contact.phonenumbers.map((pn) => {
                 return (
                     <div>
-
+                        <p>{pn.phonenumberType}</p>
                     </div>
                 )
             })
+        } else {
+            return <p>{'No numbers listed'}</p>
         }
-    }
-
-    formatWorkorderItem(workorderItem) {
-        return (
-            <Segment key={workorderItem.workordersItemId}>
-                <List.Item>
-                    <span className='list-title'>Type:</span> {workorderItem.workordersItemtype}
-                    <span className='list-title'>Description:</span> {workorderItem.description}
-                    <span className='list-title'>Quanity:</span> {workorderItem.quanity}
-                    <span className='list-title'>UnitPrice:</span> {workorderItem.unitPrice}
-                </List.Item>
-            </Segment>
-        )
     }
 
     render() {
         if (this.state.isLoading) {
-            return <Loader />
+            return <LoadingStatus />
         }
-        const { workorder, workorderItems, contact } = this.state
-        const { title, client, description } = workorder
+        const { workorder, workorderItems, contact, client } = this.state
+        const { title, description } = workorder
 
         return (
             <div>
-                <Segment>
-                    <Header as='h3'>{title}</Header>
-                    <Link to={`/workorders/edit/${this.props.match.params.id}`} className='btn btn-primary'>Edit</Link>
-                    <List>
-                        <List.Item><span className='list-title'>Client:</span> {client.name}</List.Item>
-                        <List.Item><span className='list-title'>Contact:</span> {contact.name}</List.Item>
-                        <List.Item><span className='list-title'>Phone:</span> {this.getPhonenumberList()}</List.Item>
-                        <List.Item><span className='list-title'>Email:</span> {contact.email === null ? 'N/A' : contact.email}</List.Item>
-                        <List.Header as='h3'>Description</List.Header>
-                        <List.Item>{description}</List.Item>
-                    </List>
-                </Segment>
-                <List>
-                    {workorderItems.map((item) => this.formatWorkorderItem(item))}
-                </List>
-                <pre>{JSON.stringify(this.state.workorder, null, 2)}</pre>
-                <pre>{JSON.stringify(this.state.contact, null, 2)}</pre>
-                <pre>{JSON.stringify(this.state.workorderItems, null, 2)}</pre>
+                <Card.Group>
+                    <Card>
+                        <Card.Content>
+                            <Card.Header as='h3'>{title}</Card.Header>
+                        </Card.Content>
+                        <Card.Content>
+                            <List>
+                                <Segment>
+                                    <List.Item>
+                                        <Card.Header as='h5'>Client:</Card.Header>
+                                        {client ? client.name : 'Attach client'}
+                                    </List.Item>
+                                </Segment>
+                                <Segment>
+                                    {!contact
+                                        ? 'No contact listed'
+                                        : <div>
+                                            <List.Item>
+                                                <Card.Header as='h5'>Contacts</Card.Header >
+                                            </List.Item>
+                                            <List.Item>{contact.name}</List.Item>
+                                            <List.Item>{this.getPhonenumberList()}</List.Item>
+                                            <List.Item>{contact.email ? contact.email : 'No email listed'}</List.Item>
+                                        </div>
+                                    }
+                                </Segment>
+                                <Link
+                                    to={`/workorders/edit/${workorder.workorderId}`}
+                                    className='btn btn-block btn-primary'>
+                                    Edit
+                                </Link>
+                            </List>
+                        </Card.Content>
+                    </Card>
+                    <Card>
+                        <Card.Content>
+                            <Card.Header as='h4'>Description</Card.Header>
+                            <Card.Description>
+                                {description}
+                            </Card.Description>
+                        </Card.Content>
+                    </Card>
+                    <Card>
+                        <Card.Content>
+                            <List>
+                                <List.Item>
+                                    {'Start Date:'}
+                                </List.Item>
+                                <List.Item>
+                                    {'Finish Date:'}
+                                </List.Item>
+                            </List>
+                        </Card.Content>
+                    </Card>
+                </Card.Group>
+                {workorderItems.length === 0
+                    ? <div>No tems to list</div>
+                    : <WorkorderItemsTable workorderItems={workorderItems} />}
             </div>
         )
     }

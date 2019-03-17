@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Form, Input, Segment, TextArea, Dropdown, Button } from 'semantic-ui-react'
+import { Dropdown, Segment } from 'semantic-ui-react'
 import { currencyRounder } from '../../utils/currencyRounder'
 
 const workordersItemTypes = [
@@ -38,14 +38,14 @@ export default class WorkordersItemsForm extends Component {
 
     handleChange = (e) => {
         const { name, value } = e.target
-        if(name === 'quanity'){
-            if(this.state.unitPrice > 0){
-                this.setState({ total: currencyRounder(value, this.state.unitPrice)}) 
+        if (name === 'quanity') {
+            if (this.state.unitPrice > 0) {
+                this.setState({ total: currencyRounder(value, this.state.unitPrice) })
             }
         }
-        if(name === 'unitPrice'){
-            if(this.state.quanity > 0 ){
-                this.setState({ total: currencyRounder(this.state.quanity, value)}) 
+        if (name === 'unitPrice') {
+            if (this.state.quanity > 0) {
+                this.setState({ total: currencyRounder(this.state.quanity, value) })
             }
         }
 
@@ -83,9 +83,9 @@ export default class WorkordersItemsForm extends Component {
         const { workordersItemType, description, quanity, unitPrice, total, submitted } = this.state
         return (
             <Segment>
-                <Form.Group>
-                    <Form.Field required>
-                        <label>Type</label>
+                <div className='row'>
+                    <div className='col'>
+                        <label htmlFor='workordersItemType'>Type</label>
                         <Dropdown
                             selection
                             search
@@ -95,62 +95,64 @@ export default class WorkordersItemsForm extends Component {
                             value={workordersItemType}
                             disabled={submitted}
                         />
-                    </Form.Field>
-                    <Form.Field required>
-                        <label>Quanity</label>
-                        <Input
+                    </div>
+                    <div className='col'>
+                        <label htmlFor='quanity'>Quanity</label>
+                        <input
+                            className='form-control'
                             name='quanity'
                             value={quanity}
                             onChange={this.handleChange}
                             disabled={submitted}
                             type='number'
                         />
-                    </Form.Field>
-                    <Form.Field required>
-                        <label>Unit Price</label>
-                        <Input
+                    </div>
+                    <div className='col'>
+                        <label htmlFor='unitPrice'>Unit Price</label>
+                        <input
+                            className='form-control'
                             name='unitPrice'
                             value={unitPrice}
                             onChange={this.handleChange}
                             disabled={submitted}
                             type='currency'
                         />
-                    </Form.Field>
-                    <Form.Field>
-                        <label>Total</label>
-                        <Input
+                    </div>
+                    <div className='col'>
+                        <label htmlFor='total'>Total</label>
+                        <input
+                            className='form-control'
                             name='total'
                             value={total}
                             onChange={this.handleChange}
                             disabled={true}
                         />
-                    </Form.Field>
-                </Form.Group>
-                <Form.Field>
-                    <label>Description</label>
-                    <TextArea
+                    </div >
+                </div>
+                <div className='form-group'>
+                    <label htmlFor='description'>Description</label>
+                    <textarea
+                        className='form-control'
                         name='description'
                         value={description}
                         onChange={this.handleChange}
                         disabled={submitted}
-                    />
-                </Form.Field>
-                {!submitted
-                    ? <Button
-                        positive
-                        content='Save'
-                        size='small'
-                        onClick={this.onSubmit}
-                        disabled={!this.validateForm()}
-                    />
-                    : <Button
-                        negative
-                        content='Remove'
-                        size='small'
-                        onClick={this.onDelete}
-                    />
+                        rows='3'
+                    ></textarea>
+                </div>
+                {
+                    !submitted
+                        ? <button
+                            className='btn btn-success'
+                            onClick={this.onSubmit}
+                            disabled={!this.validateForm()}
+                        >Save</button>
+                        : <button
+                            className='btn btn-danger'
+                            onClick={this.onDelete}
+                        >Remove</button>
                 }
-            </Segment>
+            </Segment >
         )
     }
 }
