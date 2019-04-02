@@ -51,10 +51,10 @@ export default class ClientForm extends Component {
 
     handleSubmit = (e) => {
         e.preventDefault()
-        this.setState({ isLoading: true })
+        this.setState({ isLoading: true })    
         if (this.state.mode === 'edit') {
             this.editClient()
-        } else {
+        }else {
             this.newClient()
         }
     }
@@ -74,11 +74,15 @@ export default class ClientForm extends Component {
     }
 
     editClient = async () => {
-        await updateClient(this.state, this.props.match.params.id)
-        if (this.props.location.state.fromWorkorder === true) {
-            this.props.history.push(`/workorders/${this.props.location.state.workorderId}`)
-        } else {
-            this.props.history.push(`/clients/${this.props.match.params.id}`)
+        try {
+            await updateClient(this.state, this.props.match.params.id)
+            if (this.props.location.state.fromWorkorder === true) {
+                this.props.history.push(`/workorders/${this.props.location.state.workorderId}`)
+            } else {
+                this.props.history.push(`/clients/${this.props.match.params.id}`)
+            }
+        } catch (e) {
+            this.setState({ isLoading: false })
         }
     }
 
