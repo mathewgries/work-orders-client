@@ -1,5 +1,4 @@
 import { API } from 'aws-amplify'
-import uuid from 'uuid'
 
 /*
     Return a raw list of all clients for user
@@ -24,29 +23,31 @@ export async function getClientsForDropDown() {
     })
 }
 
-/*
-    Load full client based on the client
-    associated to the workorder being viewed
-    WorkordersView.js
-*/
 export async function getClientById(id) {
     return await API.get('clients', `/clients/${id}`)
 }
 
 /*
     Create a new client
-    NewWorkorder.js
-    NewClient.js
 */
-export async function createClientOnNewWorkorder(client) {
+export async function createClient({name, type, email}) {
     const result = await API.post('clients', '/clients', {
         body: {
             content: {
-                clientId: uuid.v1(),
-                name: client.name,
+                name,
+                type,
+                email,
             }
         }
     })
 
     return result
 }
+
+export async function updateClient(client, clientId){
+    const result = await API.put('clients', `/clients/${clientId}`, {
+        body: client
+    });
+    return result
+}
+

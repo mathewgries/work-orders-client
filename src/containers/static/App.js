@@ -46,7 +46,7 @@ class App extends Component {
 
 		return (
 			!this.state.isAuthenticating &&
-			<div className='app'>
+			<div>
 				<nav className='navbar navbar-expand-md navbar-dark bg-warning'>
 					<div className='container-fluid'>
 						<Link className='navbar-brand' to="/">Work Orders</Link>
@@ -87,8 +87,9 @@ class App extends Component {
 						</div>
 					</div>
 				</nav>
-				<Routes childProps={childProps} />
-
+				<div className='app container'>
+					<Routes childProps={childProps} />
+				</div>
 			</div >
 		);
 	}

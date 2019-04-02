@@ -24,18 +24,3 @@
   margin: 0 auto;
   padding: 5px;
 }
-
-.workorders-list {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  
-}
-
-.workorder-list-item {
-  margin: 10px auto;
-  padding: 10px;
-  min-width: 320px;
-  border: 0.5px solid lightgray;
-  border-radius: 5px;
-}

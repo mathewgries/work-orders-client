@@ -5,6 +5,7 @@ import { getClients } from '../../api/clients'
 import { getContacts } from '../../api/contacts'
 import { Link } from "react-router-dom";
 import "./Home.css";
+import { Segment } from "semantic-ui-react";
 
 export default class Home extends Component {
 	constructor(props) {
@@ -50,19 +51,19 @@ export default class Home extends Component {
 
 	renderWorkordersList(workorders) {
 		return workorders.map((workorder, i) => {
-			let client = this.matchClient(workorder.clientId)
-			let contact = this.matchContact(workorder.contactId)
+			//let client = this.matchClient(workorder.clientId)
+			//let contact = this.matchContact(workorder.contactId)
 			return (
-				<div key={workorder.workorderId} className='main-list-item'>
+				<Segment key={workorder.workorderId} className='main-list-item'>
 					<Link to={`/workorders/${workorder.workorderId}`}>
 						<div>
 							<h5>{`Title: ${workorder.title}`}</h5>
-							<div className='card-list-item'>{`Client: ${client.name}`}</div> <br />
-							<div className='card-list-item'>{`Contact: ${contact.name}`}</div> <br />
+							{/* <div className='card-list-item'>{`Client: ${client.name}`}</div> <br />
+							<div className='card-list-item'>{`Contact: ${contact.name}`}</div> <br /> */}
 							<div className='card-list-item'>{"Created: " + new Date(workorder.createdAt).toLocaleString()}</div>
 						</div>
 					</Link>
-				</div>
+				</Segment>
 			)
 		});
 	}
@@ -85,8 +86,11 @@ export default class Home extends Component {
 	}
 
 	renderWorkorders() {
+		if(this.state.isLoading){
+			return <LoadingStatus/>
+		}
 		return (
-			<div className="workorders container">
+			<div className="workorders">
 				<h1>Your Workorders</h1>
 				<hr />
 				<div key="new" to="/workorders/new">

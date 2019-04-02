@@ -51,12 +51,13 @@ export async function addClientToContact(contact, clientId) {
     return result
 }
 
-export async function createContactOnNewWorkorder(clientId, contact) {
+export async function createContact({name, email, preferredContactMethod}) {
     const result = await API.post('contacts', '/contacts', {
         body: {
             content: {
-                name: contact.name,
-                clientId
+                name,
+                email,
+                preferredContactMethod
             }
         }
     })

@@ -8,6 +8,7 @@
     "bootstrap": "^4.3.1",
     "cleave.js": "^1.4.7",
     "jquery": "^3.3.1",
+    "npm": "^6.9.0",
     "popper.js": "^1.14.7",
     "react": "^16.8.3",
     "react-bootstrap": "^0.32.4",

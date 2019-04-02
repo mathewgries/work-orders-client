@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Form, Dropdown, Segment } from 'semantic-ui-react'
+import { Dropdown, Segment } from 'semantic-ui-react'
 import AddressFormList from '../addresses/AddressFormList'
 import PhoneFormList from '../phoneNumbers/PhoneFormList'
 import LoaderButton from '../../components/LoaderButton'
@@ -149,7 +149,7 @@ export default class NewClient extends Component {
             })
 
             await addresses.map((address) => {
-                this.createAddress({
+                return this.createAddress({
                     content: {
                         clientId,
                         addressId: address.addressId,
@@ -166,7 +166,7 @@ export default class NewClient extends Component {
             })
 
             await phonenumbers.map((pn) => {
-                this.createPhonenumber({
+                return this.createPhonenumber({
                     content: {
                         phonenumberId: pn.phonenumberId,
                         clientId,

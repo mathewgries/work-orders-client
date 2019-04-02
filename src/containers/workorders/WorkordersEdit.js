@@ -1,47 +1,72 @@
-import React, { Component } from "react";
-import { FormGroup, FormControl, ControlLabel } from 'react-bootstrap'
-import LoaderButton from '../../components/LoaderButton'
-import config from '../../config'
-import { s3Upload } from '../../libs/awsLib';
+import React, { Component } from "react"
+import { Segment, Dropdown } from 'semantic-ui-react'
+import WorkordersItemsFormsList from '../../containers/workorderItems/WorkordersItemsFormsList'
+import { getWorkorderById, updateWorkorder, deleteWorkorder } from '../../api/workorders'
+import { getWorkorderItemsByWorkorderId } from '../../api/workordersItems'
+import { getClientsForDropDown, createClientOnNewWorkorder } from '../../api/clients'
+import { getContactsForDropDown, createContactOnNewWorkorder, getContactById, addClientToContact } from '../../api/contacts'
 import './Workorders.css'
-import { API, Storage } from "aws-amplify";
+import LoadingStatus from "../../components/LoadingStatus"
 
 export default class WorkordersEdit extends Component {
     constructor(props) {
-        super(props);
-
-        this.file = null;
+        super(props)
 
         this.state = {
-            isLoading: null,
-            isDeleting: null,
-            workorder: null,
+            isLoading: true,
+            isDeleting: false,
+            toggleNewClient: false,
+            toggleNewContact: false,
+            workorderId: null,
             title: '',
-            client: '',
-            contact: '',
+            client: {},
+            clients: [],
+            contact: {},
+            contacts: [],
             description: '',
-            attachmentURL: null
-        };
+            workorderItems: [],
+            newWorkorderItems: [],
+            removedWorkorderItems: [],
+            updatedWorkorderItems: []
+
+        }
     }
 
     async componentDidMount() {
         try {
-            let attachmentURL;
-            const workorder = await this.getWorkorder();
-            const { title, client, contact, description, attachment } = workorder;
+            const workorder = await getWorkorderById(this.props.match.params.id);
+            const workorderItems = await getWorkorderItemsByWorkorderId(this.props.match.params.id)
+            const clients = await getClientsForDropDown()
+            const contacts = await getContactsForDropDown()
+            const client = this.setClient(workorder.clientId, clients)
+            const contact = this.setContact(workorder.contactId, contacts)
+            const { workorderId, title, description } = workorder
 
-            if (attachment) {
-                attachmentURL = await Storage.vault.get(attachment);
-            }
-
-            this.setState({ workorder, title, client, contact, description, attachmentURL });
+            this.setState({
+                workorderId,
+                title,
+                client,
+                clients,
+                contact,
+                contacts,
+                description,
+                workorderItems
+            });
         } catch (e) {
             alert(e);
         }
+
+        this.setState({ isLoading: false })
     }
 
-    getWorkorder() {
-        return API.get("workorders", `/workorders/${this.props.match.params.id}`);
+    setClient(clientId, clients) {
+        const client = clients.filter((client) => client.key === clientId)
+        return { clientId: client[0].key, name: client[0].text }
+    }
+
+    setContact(contactId, contacts) {
+        const contact = contacts.filter((contact) => contact.key === contactId)
+        return { contactId: contact[0].key, name: contact[0].text }
     }
 
     validateForm() {
@@ -63,47 +88,83 @@ export default class WorkordersEdit extends Component {
         this.file = event.target.files[0];
     }
 
-    saveWorkorder(workorder) {
-        return API.put("workorders", `/workorders/${this.props.match.params.id}`, {
-            body: workorder
-        });
+    handleAddWorkordersItem = (newWorkorderItem) => {
+        this.setState((prev) => ({
+            workorderItems: prev.workorderItems.concat(newWorkorderItem),
+            newWorkorderItems: prev.newWorkorderItems.concat(newWorkorderItem)
+        }))
+    }
+
+    handleRemoveWorkordersItem = (id) => {
+        this.setState((prev) => ({
+            workorderItems: prev.workorderItems.filter((woi) => woi.workordersItemId !== id),
+            removedWorkorderItems: prev.removedWorkorderItems.filter((woi) => woi.workordersItemId === id)
+        }))
+    }
+
+    handleClientChange = (e, { value, options }) => {
+        const option = options.filter((i) => i.value === value)
+
+        if (option.length === 0) {
+            this.setState(() => ({
+                client: { clientId: null, name: value },
+                clients: [{ key: null, text: value, value: value }, ...this.state.clients],
+                toggleNewClient: true
+            }))
+        } else {
+            this.setState(() => ({
+                client: { clientId: option[0].key, name: option[0].value },
+                toggleNewClient: false
+            }))
+        }
+    }
+
+    handleContactChange = (e, { value, options }) => {
+        const option = options.filter((i) => i.value === value)
+
+        if (option.length === 0) {
+
+            this.setState(() => ({
+                contact: { contactId: null, name: value },
+                contacts: [{ key: null, text: value, value: value }, ...this.state.contacts],
+                toggleNewContact: true
+            }))
+        } else {
+            this.setState(() => ({
+                contact: { contactId: option[0].key, name: option[0].value },
+                toggleNewContact: false
+            }))
+        }
     }
 
     handleSubmit = async event => {
-        let attachment;
-
         event.preventDefault();
 
-        if (this.file && this.file.size > config.MAX_ATTACHMENT_SIZE) {
-            alert(`Please pick a file smaller than ${config.MAX_ATTACHMENT_SIZE / 1000000} MB.`);
-            return;
-        }
-
         this.setState({ isLoading: true });
-
         try {
-            if (this.file) {
-                attachment = await s3Upload(this.file);
+            const { title, client, contact, description, toggleNewClient, toggleNewContact } = this.state
+
+            if (toggleNewClient) {
+                const newClient = await createClientOnNewWorkorder(client)
+                this.setState({
+                    client: { clientId: newClient.clientId, name: newClient.name }
+                })
             }
 
-            const { title, client, contact, description } = this.state
-            await this.saveWorkorder({
-                title,
-                client,
-                contact,
-                description,
-                attachment: attachment || this.state.workorder.attachment
-            });
+            if (toggleNewContact) {
+                const newContact = await createContactOnNewWorkorder(this.state.client.clientId, contact)
+                this.setState({ contact: { contactId: newContact.contactId, name: newContact.name } })
+            } else if (toggleNewClient && contact !== null) {
+                const fullContact = await getContactById(contact.contactId)
+                await addClientToContact(fullContact, client.clientId)
+            }
+
+            await updateWorkorder(this.state);
             this.props.history.push("/");
         } catch (e) {
             alert(e);
             this.setState({ isLoading: false });
         }
-    }
-
-
-    deleteWorkorder() {
-        return API.del("workorders", `/workorders/${this.props.match.params.id}`);
     }
 
     handleDelete = async event => {
@@ -120,7 +181,7 @@ export default class WorkordersEdit extends Component {
         this.setState({ isDeleting: true });
 
         try {
-            await this.deleteWorkorder();
+            await deleteWorkorder(this.props.match.params.id);
             this.props.history.push("/");
         } catch (e) {
             alert(e);
@@ -130,76 +191,93 @@ export default class WorkordersEdit extends Component {
 
 
     render() {
+        if (this.state.isLoading) {
+            return <LoadingStatus />
+        }
         const { title, client, contact, description } = this.state
+        console.log('Edit: ', this.state)
         return (
-            <div className='Workorders'>
-                {this.state.workorder &&
+            <div className='container'>
+                {!this.state.isLoading &&
                     <form onSubmit={this.handleSubmit}>
-                        <FormGroup controlId='title'>
-                            <FormControl
-                                onChange={this.handleChange}
-                                value={title}
-                                componentClass='input'
+                        <Segment>
+                            <h3>Workorder Details</h3>
+                            <div className='form-group'>
+                                <label htmlFor='title'>Job Title</label>
+                                <input
+                                    className='form-control'
+                                    onChange={this.handleChange}
+                                    value={title}
+                                    name='title'
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label htmlFor='description'>Description</label>
+                                <textarea
+                                    className='form-control'
+                                    onChange={this.handleChange}
+                                    value={description}
+                                    type='textarea'
+                                    name='description'
+                                    rows='3'
+                                ></textarea>
+                            </div>
+                        </Segment>
+                        <Segment>
+                            <h3>Client Detail:</h3>
+                            <div className='row'>
+                                <div className='col'>
+                                    <label htmlFor='client'>Client Name</label>
+                                    <Dropdown
+                                        className='form-control'
+                                        name='client'
+                                        placeholder='Search client list...'
+                                        search
+                                        selection
+                                        allowAdditions
+                                        additionLabel='Create new client: '
+                                        options={this.state.clients}
+                                        value={client.name}
+                                        onChange={this.handleClientChange}
+                                    />
+                                </div>
+                                <div className='col'>
+                                    <label htmlFor='contact'>Client Name</label>
+                                    <Dropdown
+                                        className='form-control'
+                                        name='contact'
+                                        placeholder='Search contact list...'
+                                        search
+                                        selection
+                                        allowAdditions
+                                        additionLabel='Create new contact: '
+                                        options={this.state.contacts}
+                                        value={contact.name}
+                                        onChange={this.handleContactChange}
+                                    />
+                                </div>
+                            </div>
+                        </Segment>
+                        <div>
+                            <h3>Items:</h3>
+                            <WorkordersItemsFormsList
+                                workorderItemsList={this.state.workorderItems}
+                                addWorkordersItem={this.handleAddWorkordersItem}
+                                removeWorkordersItem={this.handleRemoveWorkordersItem}
+                                updateWorkordersItem={this.handleUpdateWorkordersItem}
                             />
-                        </FormGroup>
-                        <FormGroup controlId='client'>
-                            <FormControl
-                                onChange={this.handleChange}
-                                value={client}
-                                componentClass='input'
-                            />
-                        </FormGroup>
-                        <FormGroup controlId='contact'>
-                            <FormControl
-                                onChange={this.handleChange}
-                                value={contact}
-                                componentClass='input'
-                            />
-                        </FormGroup>
-                        <FormGroup controlId='description'>
-                            <FormControl
-                                onChange={this.handleChange}
-                                value={description}
-                                componentClass='textarea'
-                            />
-                        </FormGroup>
-                        {this.state.workorder.attachment &&
-                            <FormGroup>
-                                <ControlLabel>Attachment</ControlLabel>
-                                <FormControl.Static>
-                                    <a
-                                        target='_blank'
-                                        rel="noopener noreferrer"
-                                        href={this.state.attachmentURL}
-                                    >
-                                        {this.formatFilename(this.state.workorder.attachment)}
-                                    </a>
-                                </FormControl.Static>
-                            </FormGroup>}
-                        <FormGroup controlId="file">
-                            {!this.state.workorder.attachment &&
-                                <ControlLabel>Attachment</ControlLabel>}
-                            <FormControl onChange={this.handleFileChange} type="file" />
-                        </FormGroup>
-                        <LoaderButton
-                            block
-                            bsStyle="primary"
-                            bsSize="large"
+                        </div>
+                        <button
+                            style={{ marginRight: '10px' }}
+                            className='btn btn-primary'
                             disabled={!this.validateForm()}
-                            type="submit"
-                            isLoading={this.state.isLoading}
-                            text="Save"
-                            loadingText="Saving…"
-                        />
-                        <LoaderButton
-                            block
-                            bsStyle="danger"
-                            bsSize="large"
-                            isLoading={this.state.isDeleting}
+                            type='submit'
+                        >Save</button>
+                        <button
+                            className='btn btn-danger'
                             onClick={this.handleDelete}
-                            text="Delete"
-                            loadingText="Deleting…"
-                        />
+                        >Delete</button>
                     </form>}
             </div>
         )

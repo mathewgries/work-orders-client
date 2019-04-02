@@ -20,9 +20,7 @@ export default class ContactList extends Component {
 
         try {
             const contacts = await getContacts()
-            console.log('Contacts: ', contacts)
             const clients = await getClients()
-            console.log('Clients: ', clients)
 
             this.setState({ contacts, clients })
         } catch (e) {

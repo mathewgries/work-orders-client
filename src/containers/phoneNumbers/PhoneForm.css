@@ -1,7 +1,6 @@
-.phone-input {
-    display: flex;
+ .phone-input {
     justify-content: space-between;
-}
+} 
 
 .country-code {
     -webkit-appearance: none; 

@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { API } from 'aws-amplify'
-import { Dropdown, Loader, Segment } from 'semantic-ui-react'
+import { Dropdown } from 'semantic-ui-react'
+import LoadingStatus from '../../components/LoadingStatus'
 import PhoneFormList from '../phoneNumbers/PhoneFormList'
 import LoaderButton from '../../components/LoaderButton'
 import uuid from 'uuid'
@@ -159,7 +160,7 @@ export default class NewContact extends Component {
 
     render() {
         if (this.state.isLoading) {
-            return <Loader />
+            return <LoadingStatus />
         }
 
         const { name, email, client, preferredContactMethod } = this.state

@@ -2,3 +2,13 @@
     padding-bottom: 15px;
   }
   
+  .workorder-details {
+    padding: 0;
+    margin: 0;
+  }
+
+  .workorder-card {
+    padding: 10px;
+    border: 1px solid lightgray;
+    border-radius: 5px;
+  }

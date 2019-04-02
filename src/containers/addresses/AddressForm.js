@@ -135,7 +135,7 @@ export default class AddressForm extends Component {
                 </div>
                 <div className='form-group'>
                     <div className='row'>
-                        <div className='col'>
+                        <div className='col-md-4'>
                             <label>State:</label>
                             <Dropdown
                                 className='form-control'
@@ -148,7 +148,7 @@ export default class AddressForm extends Component {
                                 disabled={submitted}
                             />
                         </div>
-                        <div className='col'>
+                        <div className='col-md-4'>
                             <label>City:</label>
                             <input
                                 className='form-control'
@@ -158,7 +158,7 @@ export default class AddressForm extends Component {
                                 disabled={submitted}
                             />
                         </div>
-                        <div className='col'>
+                        <div className='col-md-4'>
                             <label>Zip Code:</label>
                             <input
                                 className='form-control'
@@ -168,7 +168,7 @@ export default class AddressForm extends Component {
                                 disabled={submitted}
                             />
                         </div>
-                        <div className='col'>
+                        <div className='col-md-4'>
                             <label>Extension (optional)</label>
                             <input
                                 className='form-control'

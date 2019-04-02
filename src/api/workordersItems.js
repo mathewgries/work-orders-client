@@ -1,5 +1,4 @@
 import { API } from 'aws-amplify'
-
 /*
     Get all workorders related to the user
     This is used locally in this file.
@@ -23,19 +22,27 @@ export async function getWorkorderItemsByWorkorderId(workorderId) {
     Create a new workordersItem
     NewWorkorder.js
 */
-export async function createWorkordersItem(workorderId, workorderItem) {
+export async function createWorkordersItem(workorderId, workordersItem) {
     const result = await API.post('workordersItems', '/workordersItems', {
         body: {
             content: {
+                workordersItemId: workordersItem.workordersItemId,
                 workorderId,
-                workordersItemType: workorderItem.workordersItemType,
-                description: workorderItem.description,
-                quanity: workorderItem.quanity,
-                unitPrice: workorderItem.unitPrice,
-                total: workorderItem.total
+                workordersItemType: workordersItem.workordersItemType,
+                description: workordersItem.description,
+                quanity: workordersItem.quanity,
+                unitPrice: workordersItem.unitPrice,
+                total: workordersItem.total
             }
         }
     })
 
+    return result
+}
+
+export async function updateWorkordersItem(workordersItem){
+    const result = await API.put('workordersItems', `/workordersItems/${workordersItem.workordersItemId}`, {
+        body : workordersItem
+    })
     return result
 }

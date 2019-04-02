@@ -37,7 +37,7 @@ export default class ClientList extends Component {
         ).map((contact) => contact.name)
     }
 
-    renderClientsList(clients) {
+    renderClientsList() {
         return this.state.clients.map((client) =>
             <div key={client.clientId} className='main-list-item'>
                 <Link to={`/clients/${client.clientId}`}>
@@ -55,7 +55,13 @@ export default class ClientList extends Component {
             <div className="clients container">
                 <h1>Your Clients</h1>
                 <hr />
-                <Link to="/clients/new"><h4><b>{"\uFF0B"}</b> Create a new client</h4></Link>
+                <Link to={{
+                    pathname: '/clients/new',
+                    state: {
+                        fromWorkorder: false,
+                        workorderId: null
+                    }
+                }}><h4><b>{"\uFF0B"}</b> Create a new client</h4></Link>
                 <div className='main-list'>
                     {!this.state.isLoading && this.renderClientsList(this.state.clients)}
                 </div>

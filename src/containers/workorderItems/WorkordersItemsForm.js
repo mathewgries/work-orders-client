@@ -8,11 +8,14 @@ const workordersItemTypes = [
     { text: 'tool', value: 'tool' },
     { text: 'miscellaneous', value: 'miscellaneous' }
 ]
-
+/*
+    TODO: Allow for editing current Items that have been "saved"
+*/
 export default class WorkordersItemsForm extends Component {
     constructor(props) {
         super(props)
         this.state = {
+            editMode: false,
             id: null,
             workordersItemType: '',
             description: '',
@@ -24,6 +27,19 @@ export default class WorkordersItemsForm extends Component {
     }
 
     componentDidMount() {
+        if (this.props.workorderItem !== null) {
+            const { workordersItemId, workordersItemType, description, quanity, unitPrice, total } = this.props.workorderItem
+            this.setState({
+                editMode: true,
+                id: workordersItemId,
+                workordersItemType,
+                description,
+                quanity,
+                unitPrice,
+                total,
+                submitted: true
+            })
+        }
         this.setState(() => ({
             id: this.props.id,
         }))
@@ -62,12 +78,33 @@ export default class WorkordersItemsForm extends Component {
         this.props.removeComponent(this.state.id)
     }
 
+    handleUpdate = (e) => {
+        const { id, workordersItemType, description, quanity, unitPrice, total } = this.state
+        this.props.updateComponent({
+            id,
+            workordersItemType,
+            description,
+            quanity,
+            unitPrice,
+            total,
+        })
+
+        this.props.updateWorkordersItem({
+            id,
+            workordersItemType,
+            description,
+            quanity,
+            unitPrice,
+            total,
+        })
+    }
+
     onSubmit = (e) => {
         e.preventDefault()
         const { id, workordersItemType, description, quanity, unitPrice, total } = this.state
 
         this.props.addWorkordersItem({
-            workordersItemId: id,
+            id,
             workordersItemType,
             description,
             quanity,
@@ -81,12 +118,14 @@ export default class WorkordersItemsForm extends Component {
 
     render() {
         const { workordersItemType, description, quanity, unitPrice, total, submitted } = this.state
+        console.log('Form: ', this.state)
         return (
             <Segment>
                 <div className='row'>
-                    <div className='col'>
+                    <div className='col-md-4 form-group'>
                         <label htmlFor='workordersItemType'>Type</label>
                         <Dropdown
+                            className='form-control'
                             selection
                             search
                             name='workordersItemType'
@@ -96,7 +135,7 @@ export default class WorkordersItemsForm extends Component {
                             disabled={submitted}
                         />
                     </div>
-                    <div className='col'>
+                    <div className='col-md-4 form-group'>
                         <label htmlFor='quanity'>Quanity</label>
                         <input
                             className='form-control'
@@ -107,7 +146,7 @@ export default class WorkordersItemsForm extends Component {
                             type='number'
                         />
                     </div>
-                    <div className='col'>
+                    <div className='col-md-4 form-group'>
                         <label htmlFor='unitPrice'>Unit Price</label>
                         <input
                             className='form-control'
@@ -118,7 +157,7 @@ export default class WorkordersItemsForm extends Component {
                             type='currency'
                         />
                     </div>
-                    <div className='col'>
+                    <div className='col-md-4 form-group'>
                         <label htmlFor='total'>Total</label>
                         <input
                             className='form-control'
@@ -147,10 +186,18 @@ export default class WorkordersItemsForm extends Component {
                             onClick={this.onSubmit}
                             disabled={!this.validateForm()}
                         >Save</button>
-                        : <button
+                        : <div><button
+                            style={{marginRight: '10px'}}
                             className='btn btn-danger'
                             onClick={this.onDelete}
                         >Remove</button>
+                            <button
+                                className='btn btn-primary'
+                                onClick={this.handleUpdate}
+                            >
+                                Edit
+                        </button>
+                        </div>
                 }
             </Segment >
         )

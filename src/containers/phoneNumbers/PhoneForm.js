@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Dropdown, Button, Segment } from 'semantic-ui-react'
+import { Dropdown, Segment } from 'semantic-ui-react'
 import Cleave from 'cleave.js/react'
 import CleavePhone from 'cleave.js/dist/addons/cleave-phone.i18n'
 import { countryCodes } from '../../utils/countryCodes'
@@ -14,10 +14,6 @@ const phoneTypes = [
     { text: 'Office', value: 'Office' },
     { text: 'Fax', value: 'Fax' }
 ]
-
-const countryCodeList = countryCodes.sort().map((cc) => {
-    return <option key={cc}>{cc}</option>
-})
 
 export default class PhoneForm extends Component {
     constructor(props) {
@@ -85,8 +81,8 @@ export default class PhoneForm extends Component {
 
         return (
             <Segment>
-                <div className='phone-input'>
-                    <div className='form-group'>
+                <div className='row phone-input'>
+                    <div className='col-md-2 form-group'>
                         <label>Country:</label>
                         <select
                             className='country-code form-control'
@@ -101,7 +97,7 @@ export default class PhoneForm extends Component {
                                 })}
                         </select>
                     </div>
-                    <div className='form-group'>
+                    <div className='col-md-3 form-group'>
                         <label>Phone Number:</label>
                         <Cleave
                             className="css-phone form-control"
@@ -110,7 +106,7 @@ export default class PhoneForm extends Component {
                             disabled={submitted}
                         />
                     </div>
-                    <div className='form-group'>
+                    <div className='col-3 form-group'>
                         <label>Phone Type:</label>
                         <Dropdown
                             className='form-control'

@@ -14,14 +14,6 @@ code {
     monospace;
 }
 
-.App {
-  margin-top: 15px;
-}
-
-.App .navbar-brand {
-  font-weight: bold;
-}
-
 select.form-control,
 textarea.form-control,
 input.form-control {
@@ -33,15 +25,13 @@ input[type=file] {
 
 .main-list {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  flex-direction: column;
   margin: 0 10px;
 }
 
-.main-list-item {
-  margin: 10px auto;
-  padding: 10px;
-  min-width: 320px;
-  border: 0.5px solid lightgray;
-  border-radius: 5px;
+.create-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 10px;
 }
